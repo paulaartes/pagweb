@@ -4,107 +4,223 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Asistencia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            max-width: 1000px;
+            font-family: 'Roboto', sans-serif;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
         }
         h1 {
-            color: #333;
             text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 500;
         }
         .controls {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
             align-items: center;
         }
-        select, button {
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+        select {
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid #dfe3e8;
+            font-size: 15px;
+            min-width: 200px;
         }
         button {
-            background-color: #4CAF50;
-            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
             border: none;
+            font-size: 15px;
             cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        button:hover {
-            background-color: #45a049;
+        button i {
+            font-size: 18px;
+        }
+        .btn-save {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-save:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+        .btn-clear {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-clear:hover {
+            background-color: #c0392b;
+        }
+        .btn-history {
+            background-color: #95a5a6;
+            color: white;
         }
         .contenedor {
             display: flex;
-            gap: 30px;
+            gap: 25px;
             margin-top: 20px;
         }
         .casilla {
-            width: 45%;
-            min-height: 500px;
-            padding: 15px;
+            width: 48%;
+            min-height: 450px;
+            padding: 20px;
+            background-color: white;
             border-radius: 10px;
-            background-color: #f9f9f9;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        .casilla:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         #presente {
-            border: 3px dashed #4CAF50;
+            border-top: 5px solid #2ecc71;
         }
         #ausente {
-            border: 3px dashed #f44336;
+            border-top: 5px solid #e74c3c;
         }
         .casilla h2 {
             text-align: center;
             margin-top: 0;
+            color: #34495e;
+            font-weight: 500;
         }
         #fotos {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .foto-container {
+            position: relative;
+            display: inline-block;
         }
         .foto {
             width: 100px;
             height: 100px;
             object-fit: cover;
-            border-radius: 5px;
+            border-radius: 8px;
+            border: 3px solid #ecf0f1;
             cursor: grab;
-            border: 2px solid #ddd;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .foto:hover {
             transform: scale(1.05);
-            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .btn-borrar {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+        .btn-borrar:hover {
+            transform: scale(1.1);
+        }
+        .foto-container:hover .btn-borrar {
+            display: block;
+        }
+        #tabla-datos {
+            margin-top: 40px;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background-color: #f8f9fa;
+            color: #34495e;
+            font-weight: 500;
+        }
+        tr:hover {
+            background-color: #f5f7fa;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <h1>Registro de Asistencia</h1>
+    <h1><i class="fas fa-clipboard-check"></i> Registro de Asistencia</h1>
     
     <div class="controls">
         <select id="fecha-select" onchange="cargarAsistencia(this.value)">
             <option value="">-- Selecciona fecha --</option>
         </select>
-        <button onclick="guardarAsistencia()">Guardar Asistencia</button>
+        <button class="btn-save" onclick="guardarAsistencia()">
+            <i class="fas fa-save"></i> Guardar
+        </button>
+        <button class="btn-clear" onclick="limpiarTodo()">
+            <i class="fas fa-trash-alt"></i> Limpiar
+        </button>
+        <button class="btn-history" onclick="mostrarDatos()">
+            <i class="fas fa-history"></i> Historial
+        </button>
     </div>
 
     <div class="contenedor">
         <div class="casilla" id="presente" ondrop="soltar(event)" ondragover="permitirSoltar(event)">
-            <h2>Presente ✅</h2>
+            <h2><i class="fas fa-check-circle"></i> Presentes</h2>
         </div>
         <div class="casilla" id="ausente" ondrop="soltar(event)" ondragover="permitirSoltar(event)">
-            <h2>Ausente ❌</h2>
+            <h2><i class="fas fa-times-circle"></i> Ausentes</h2>
         </div>
     </div>
 
     <div id="fotos">
-        <!-- Ejemplo con 2 fotos - añade las tuyas -->
-        <img src="img/ardilla.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
-             data-nombre="Juan Pérez" alt="Juan Pérez">
-        <img src="img/animales.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
-             data-nombre="María Gómez" alt="María Gómez">
+        <!-- Ejemplo de fotos - Reemplaza con tus imágenes -->
+        <div class="foto-container">
+            <img src="img/ardilla.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
+                 data-nombre="Ana López" alt="Ana López">
+            <button class="btn-borrar" onclick="borrarFoto(this)">✕</button>
+        </div>
+        <div class="foto-container">
+            <img src="img/animales.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
+                 data-nombre="Carlos Ruiz" alt="Carlos Ruiz">
+            <button class="btn-borrar" onclick="borrarFoto(this)">✕</button>
+        </div>
         <!-- Añade más fotos aquí -->
     </div>
+
+    <div id="tabla-datos"></div>
 
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
