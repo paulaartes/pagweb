@@ -4,7 +4,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDP8yvq19Z74rARviA8HlTggnIwHEaPLTY",
   authDomain: "asistencia-alumnos-71d0e.firebaseapp.com",
   projectId: "asistencia-alumnos-71d0e",
-  storageBucket: "asistencia-alumnos-71d0e.firebasestorage.app",
+  storageBucket: "asistencia-alumnos-71d0e.appspot.com", 
   messagingSenderId: "56629959322",
   appId: "1:56629959322:web:7875a224dd6971ddde1d23",
   measurementId: "G-7WQ1PD3418"
@@ -282,8 +282,6 @@ function mostrarDatos() {
 // INICIALIZACIÓN
 // ======================
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar Firebase
-    firebase.initializeApp(firebaseConfig);
     
     // Cargar fechas disponibles
     cargarFechas();
