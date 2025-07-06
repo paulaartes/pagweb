@@ -82,15 +82,15 @@ function soltar(ev) {
     const nombre = ev.dataTransfer.getData("text");
     const estado = ev.target.id;
     
-    const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
-    if (!fotoOriginal) return;
+    // Buscar la foto ORIGINAL (no clonar si ya existe en una casilla)
+    const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]:not(#presente .foto, #ausente .foto)`);
+    
+    if (!fotoOriginal) return; // Si ya está en una casilla, no hacer nada
 
     const contenedor = fotoOriginal.parentElement.cloneNode(true);
     const foto = contenedor.querySelector('.foto');
     
     foto.style.border = estado === 'presente' ? '3px solid #2ecc71' : '3px solid #e74c3c';
-    foto.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-    
     ev.target.appendChild(contenedor);
 }
 
@@ -101,12 +101,14 @@ function borrarFoto(boton) {
     const contenedor = boton.parentElement;
     const foto = contenedor.querySelector('.foto');
     
-    // Restaurar estilos
-    foto.style.border = '3px solid #ecf0f1';
-    foto.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+    // Eliminar el contenedor directamente (no moverlo)
+    contenedor.remove();
     
-    // Mover de vuelta al área principal
-    document.getElementById('fotos').appendChild(contenedor);
+    // Opcional: Restaurar la foto original si prefieres mantenerla
+    const fotoOriginal = document.querySelector(`.foto[data-nombre="${foto.getAttribute('data-nombre')}"]`);
+    if (fotoOriginal) {
+        fotoOriginal.style.border = '3px solid #ecf0f1';
+    }
 }
 
 /**
