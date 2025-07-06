@@ -1,37 +1,68 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página Web</title>
+    <title>Registro de Asistencia</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-            background-color: #f0f0f0;
+        .contenedor {
+            display: flex;
+            gap: 20px;
         }
-        h1 {
-            color: #333;
+        .foto {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed #ccc;
+            margin: 10px;
+            cursor: grab;
         }
-        .boton {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
+        #presentes, #ausentes {
+            width: 200px;
+            min-height: 300px;
+            border: 3px solid #4CAF50; /* Verde para presentes */
+            padding: 10px;
+        }
+        #ausentes {
+            border-color: #f44336; /* Rojo para ausentes */
         }
     </style>
 </head>
 <body>
-    <h1>¡Bienvenido a mi Página!</h1>
-    <p>Esta es mi primera página web en GitHub Pages.</p>
-    <a href="#" class="boton">Haz clic aquí</a>
-    
-    <!-- Puedes añadir más contenido aquí -->
-    <div>
-        <img src="https://via.placeholder.com/300" alt="Ejemplo de imagen">
+    <h1>Registro de Asistencia</h1>
+    <div class="contenedor">
+        <div id="presentes" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>Presentes ✅</h2>
+        </div>
+        <div id="ausentes" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <h2>Ausentes ❌</h2>
+        </div>
     </div>
+
+    <div id="fotos">
+        <!-- Fotos de los estudiantes (arrastrables) -->
+        <img src="foto1.jpg" class="foto" draggable="true" ondragstart="drag(event)" id="estudiante1">
+        <img src="foto2.jpg" class="foto" draggable="true" ondragstart="drag(event)" id="estudiante2">
+        <!-- Añade más fotos -->
+    </div>
+
+    <script>
+        // Funciones para Drag & Drop
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            const id = ev.dataTransfer.getData("text");
+            const elemento = document.getElementById(id);
+            ev.target.appendChild(elemento);
+            
+            // Aquí guardarías en Firebase si lo usas
+            console.log(`Foto movida a: ${ev.target.id}`);
+        }
+    </script>
 </body>
 </html>
 
