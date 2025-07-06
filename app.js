@@ -1,15 +1,16 @@
-// Configuración de Firebase (REMPLAZA con tus datos)
+// Configuración Firebase (REMPLAZA con tus datos)
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "TU_API_KEY",
-    authDomain: "TU_PROYECTO.firebaseapp.com",
-    projectId: "TU_PROYECTO",
-    storageBucket: "TU_PROYECTO.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+  apiKey: "AIzaSyDP8yvq19Z74rARviA8HlTggnIwHEaPLTY",
+  authDomain: "asistencia-alumnos-71d0e.firebaseapp.com",
+  projectId: "asistencia-alumnos-71d0e",
+  storageBucket: "asistencia-alumnos-71d0e.firebasestorage.app",
+  messagingSenderId: "56629959322",
+  appId: "1:56629959322:web:7875a224dd6971ddde1d23",
+  measurementId: "G-7WQ1PD3418"
 };
-
 // Inicializar Firebase
-firebase.initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // Variables globales
@@ -19,7 +20,9 @@ let fechaActual = new Date().toLocaleDateString('es-ES');
 // FUNCIONES PRINCIPALES
 // ======================
 
-// 1. Cargar fechas disponibles desde Firebase
+/**
+ * Carga las fechas disponibles desde Firestore
+ */
 function cargarFechas() {
     const select = document.getElementById('fecha-select');
     select.innerHTML = '<option value="">-- Selecciona fecha --</option>';
@@ -42,98 +45,110 @@ function cargarFechas() {
                 const option = document.createElement('option');
                 option.value = fecha;
                 option.textContent = fecha;
-                if (fecha === fechaActual) option.selected = true;
+                if (fecha === fechaActual) {
+                    option.selected = true;
+                }
                 select.appendChild(option);
             });
 
             if (fechasUnicas.size > 0) {
                 cargarAsistencia(fechaActual);
             }
+        })
+        .catch(error => {
+            console.error("Error cargando fechas:", error);
         });
 }
 
-// 2. Funciones de arrastre y soltar
+/**
+ * Permite soltar elementos en las zonas de arrastre
+ */
 function permitirSoltar(ev) {
     ev.preventDefault();
 }
 
+/**
+ * Maneja el inicio del arrastre de una foto
+ */
 function arrastrar(ev) {
     ev.dataTransfer.setData("text", ev.target.getAttribute('data-nombre'));
 }
 
+/**
+ * Maneja el evento de soltar una foto en una casilla
+ */
 function soltar(ev) {
     ev.preventDefault();
     const nombre = ev.dataTransfer.getData("text");
     const estado = ev.target.id;
     
-    // Encontrar el contenedor original
     const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
-    const contenedorOriginal = fotoOriginal.parentElement;
+    if (!fotoOriginal) return;
+
+    const contenedor = fotoOriginal.parentElement.cloneNode(true);
+    const foto = contenedor.querySelector('.foto');
     
-    // Clonar el contenedor (con botón de borrar)
-    const clone = contenedorOriginal.cloneNode(true);
-    const fotoClone = clone.querySelector('.foto');
+    foto.style.border = estado === 'presente' ? '3px solid #2ecc71' : '3px solid #e74c3c';
+    foto.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
     
-    // Estilizar según el estado
-    fotoClone.style.border = estado === 'presente' ? '3px solid #4CAF50' : '3px solid #f44336';
-    
-    // Añadir a la casilla correspondiente
-    ev.target.appendChild(clone);
+    ev.target.appendChild(contenedor);
 }
 
-// 3. Borrar foto individualmente
+/**
+ * Borra una foto individual de las casillas
+ */
 function borrarFoto(boton) {
     const contenedor = boton.parentElement;
     const foto = contenedor.querySelector('.foto');
-    const nombre = foto.getAttribute('data-nombre');
-    const fecha = document.getElementById('fecha-select').value;
-
-    // Eliminar de Firebase si existe
-    if (fecha) {
-        const inicioDia = new Date(fecha.split('/').reverse().join('-'));
-        inicioDia.setHours(0, 0, 0, 0);
-        
-        db.collection("asistencia")
-            .where("nombre", "==", nombre)
-            .where("timestamp", ">=", inicioDia)
-            .get()
-            .then(querySnapshot => {
-                querySnapshot.forEach(doc => doc.ref.delete());
-            });
-    }
-
+    
+    // Restaurar estilos
+    foto.style.border = '3px solid #ecf0f1';
+    foto.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+    
     // Mover de vuelta al área principal
     document.getElementById('fotos').appendChild(contenedor);
-    foto.style.border = '3px solid #ddd';
 }
 
-// 4. Guardar asistencia en Firebase
-function guardarAsistencia() {
-    const fechaSelect = document.getElementById('fecha-select');
-    const fecha = fechaSelect.value || fechaActual;
+/**
+ * Limpia todas las selecciones
+ */
+function limpiarTodo() {
+    document.querySelectorAll('#presente .foto-container, #ausente .foto-container').forEach(contenedor => {
+        const foto = contenedor.querySelector('.foto');
+        foto.style.border = '3px solid #ecf0f1';
+        foto.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
+        document.getElementById('fotos').appendChild(contenedor);
+    });
+    
+    console.log("Selección limpiada");
+}
 
+/**
+ * Guarda la asistencia en Firestore
+ */
+function guardarAsistencia() {
+    const fecha = document.getElementById('fecha-select').value || fechaActual;
     if (!fecha) {
-        alert("Selecciona una fecha primero");
+        alert("⚠️ Selecciona una fecha primero");
         return;
     }
 
     const inicioDia = new Date(fecha.split('/').reverse().join('-'));
     inicioDia.setHours(0, 0, 0, 0);
 
-    // Borrar registros antiguos de esta fecha
+    // Preparar batch de operaciones
+    const batch = db.batch();
+    
+    // 1. Eliminar registros existentes para esta fecha
     db.collection("asistencia")
         .where("timestamp", ">=", inicioDia)
         .get()
         .then((querySnapshot) => {
-            const batch = db.batch();
             querySnapshot.forEach(doc => {
                 batch.delete(doc.ref);
             });
-            return batch.commit();
-        })
-        .then(() => {
-            // Guardar nuevos registros
-            const batch = db.batch();
+            
+            // 2. Añadir nuevos registros
             const presentes = document.querySelectorAll('#presente .foto');
             const ausentes = document.querySelectorAll('#ausente .foto');
 
@@ -142,7 +157,7 @@ function guardarAsistencia() {
                 batch.set(ref, {
                     nombre: foto.getAttribute('data-nombre'),
                     estado: 'presente',
-                    timestamp: firebase.firestore.Timestamp.fromDate(new Date(inicioDia))
+                    timestamp: firebase.firestore.Timestamp.fromDate(inicioDia)
                 });
             });
 
@@ -151,29 +166,31 @@ function guardarAsistencia() {
                 batch.set(ref, {
                     nombre: foto.getAttribute('data-nombre'),
                     estado: 'ausente',
-                    timestamp: firebase.firestore.Timestamp.fromDate(new Date(inicioDia))
+                    timestamp: firebase.firestore.Timestamp.fromDate(inicioDia)
                 });
             });
 
             return batch.commit();
         })
         .then(() => {
-            alert("Asistencia guardada correctamente");
-            cargarFechas(); // Actualizar desplegable
+            alert("✅ Asistencia guardada correctamente");
+            cargarFechas(); // Actualizar el desplegable
         })
         .catch(error => {
             console.error("Error al guardar:", error);
-            alert("Error al guardar la asistencia");
+            alert("❌ Error al guardar la asistencia");
         });
 }
 
-// 5. Cargar asistencia por fecha
+/**
+ * Carga la asistencia de una fecha específica
+ */
 function cargarAsistencia(fecha) {
     if (!fecha) return;
 
     // Limpiar casillas
-    document.getElementById('presente').innerHTML = '<h2>Presente ✅</h2>';
-    document.getElementById('ausente').innerHTML = '<h2>Ausente ❌</h2>';
+    document.getElementById('presente').innerHTML = '<h2><i class="fas fa-check-circle"></i> Presentes</h2>';
+    document.getElementById('ausente').innerHTML = '<h2><i class="fas fa-times-circle"></i> Ausentes</h2>';
 
     // Convertir fecha a rango de timestamps
     const inicioDia = new Date(fecha.split('/').reverse().join('-'));
@@ -191,73 +208,93 @@ function cargarAsistencia(fecha) {
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 const casilla = document.getElementById(data.estado);
-                
-                // Buscar foto original
                 const fotoOriginal = document.querySelector(`.foto[data-nombre="${data.nombre}"]`);
+                
                 if (fotoOriginal) {
                     const contenedor = fotoOriginal.parentElement.cloneNode(true);
-                    const fotoClone = contenedor.querySelector('.foto');
-                    fotoClone.style.border = data.estado === 'presente' ? '3px solid #4CAF50' : '3px solid #f44336';
+                    const foto = contenedor.querySelector('.foto');
+                    foto.style.border = data.estado === 'presente' ? '3px solid #2ecc71' : '3px solid #e74c3c';
+                    foto.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
                     casilla.appendChild(contenedor);
                 }
             });
+        })
+        .catch(error => {
+            console.error("Error cargando asistencia:", error);
         });
 }
 
-// 6. Mostrar todos los registros (opcional)
+/**
+ * Muestra el historial completo en una tabla
+ */
 function mostrarDatos() {
     const contenedor = document.getElementById('tabla-datos');
-    contenedor.innerHTML = '<h2>Historial Completo</h2>';
+    contenedor.innerHTML = '<h2><i class="fas fa-history"></i> Historial Completo</h2>';
 
     db.collection("asistencia")
         .orderBy("timestamp", "desc")
         .get()
         .then((querySnapshot) => {
+            if (querySnapshot.empty) {
+                contenedor.innerHTML += '<p>No hay registros aún</p>';
+                return;
+            }
+
             let tabla = `
                 <table>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
             `;
 
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
                 const fecha = data.timestamp.toDate().toLocaleDateString('es-ES');
+                const estadoIcon = data.estado === 'presente' ? 
+                    '<i class="fas fa-check-circle" style="color:#2ecc71"></i>' : 
+                    '<i class="fas fa-times-circle" style="color:#e74c3c"></i>';
+                
                 tabla += `
                     <tr>
                         <td>${data.nombre}</td>
-                        <td>${data.estado}</td>
+                        <td>${estadoIcon} ${data.estado}</td>
                         <td>${fecha}</td>
                     </tr>
                 `;
             });
 
-            tabla += "</table>";
+            tabla += "</tbody></table>";
             contenedor.innerHTML += tabla;
+        })
+        .catch(error => {
+            console.error("Error cargando historial:", error);
+            contenedor.innerHTML += '<p>Error al cargar el historial</p>';
         });
 }
 
 // ======================
 // INICIALIZACIÓN
 // ======================
-window.onload = function() {
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    
+    // Cargar fechas disponibles
     cargarFechas();
     
-    // Configurar botones de borrado en fotos iniciales
+    // Añadir botones de borrado a todas las fotos iniciales
     document.querySelectorAll('.foto').forEach(foto => {
-        const contenedor = foto.parentElement;
-        if (!contenedor.querySelector('.btn-borrar')) {
-            const botonBorrar = document.createElement('button');
-            botonBorrar.className = 'btn-borrar';
-            botonBorrar.innerHTML = '✕';
-            botonBorrar.onclick = function() { borrarFoto(this); };
-            contenedor.appendChild(botonBorrar);
+        if (!foto.parentElement.querySelector('.btn-borrar')) {
+            const boton = document.createElement('button');
+            boton.className = 'btn-borrar';
+            boton.innerHTML = '✕';
+            boton.onclick = function() { borrarFoto(this); };
+            foto.parentElement.appendChild(boton);
         }
     });
-};
-// Inicializar al cargar la página
-window.onload = function() {
-    cargarFechas();
-};
+});
