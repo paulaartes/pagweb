@@ -12,6 +12,11 @@ const firebaseConfig = {
 // Inicializar Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+db.collection("test").add({
+    test: new Date().toISOString()
+})
+.then(() => console.log("Conexión a Firestore exitosa"))
+.catch(error => console.error("Error conectando a Firestore:", error));
 
 // Variables globales
 let fechaActual = new Date().toLocaleDateString('es-ES');
