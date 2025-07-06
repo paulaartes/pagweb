@@ -23,41 +23,35 @@ let fechaActual = new Date().toLocaleDateString('es-ES');
 /**
  * Carga las fechas disponibles desde Firestore
  */
-function cargarFechas() {
+async function cargarFechas() {
     const select = document.getElementById('fecha-select');
     select.innerHTML = '<option value="">-- Selecciona fecha --</option>';
 
-    db.collection("asistencia")
-        .orderBy("timestamp", "desc")
-        .get()
-        .then((querySnapshot) => {
-            const fechasUnicas = new Set();
-
-            querySnapshot.forEach((doc) => {
-                if (doc.data().timestamp) {
-                    const fecha = doc.data().timestamp.toDate();
-                    const fechaFormateada = fecha.toLocaleDateString('es-ES');
-                    fechasUnicas.add(fechaFormateada);
-                }
-            });
-
-            fechasUnicas.forEach(fecha => {
-                const option = document.createElement('option');
-                option.value = fecha;
-                option.textContent = fecha;
-                if (fecha === fechaActual) {
-                    option.selected = true;
-                }
-                select.appendChild(option);
-            });
-
-            if (fechasUnicas.size > 0) {
-                cargarAsistencia(fechaActual);
-            }
-        })
-        .catch(error => {
-            console.error("Error cargando fechas:", error);
+    try {
+        const snapshot = await db.collection('asistencia').get();
+        const fechas = snapshot.docs.map(doc => {
+            const [year, month, day] = doc.id.split('-');
+            return `${day}/${month}/${year}`;
         });
+
+        fechas.sort((a, b) => new Date(b.split('/').reverse().join('-')) - new Date(a.split('/').reverse().join('-')));
+        
+        fechas.forEach(fecha => {
+            const option = document.createElement('option');
+            option.value = fecha;
+            option.textContent = fecha;
+            if (fecha === fechaActual) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+
+        if (fechas.length > 0) {
+            cargarAsistencia(fechaActual);
+        }
+    } catch (error) {
+        console.error("Error cargando fechas:", error);
+    }
 }
 
 /**
@@ -127,105 +121,97 @@ function limpiarTodo() {
 /**
  * Guarda la asistencia en Firestore
  */
-function guardarAsistencia() {
+async function guardarAsistencia() {
     const fecha = document.getElementById('fecha-select').value || fechaActual;
     if (!fecha) {
         alert("⚠️ Selecciona una fecha primero");
         return;
     }
 
-    const inicioDia = new Date(fecha.split('/').reverse().join('-'));
-    inicioDia.setHours(0, 0, 0, 0);
+    try {
+        // Formatear fecha como YYYY-MM-DD para el documento
+        const [day, month, year] = fecha.split('/');
+        const fechaFormateada = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        
+        const batch = db.batch();
+        const fechaRef = db.collection('asistencia').doc(fechaFormateada);
+        
+        // Limpiar datos anteriores
+        const presentesSnapshot = await fechaRef.collection('presentes').get();
+        const ausentesSnapshot = await fechaRef.collection('ausentes').get();
+        
+        presentesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
+        ausentesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
 
-    const batch = db.batch();
-    
-    // 1. Eliminar registros existentes
-    db.collection("asistencia")
-        .where("timestamp", ">=", inicioDia)
-        .get()
-        .then((querySnapshot) => {
-            querySnapshot.forEach(doc => {
-                batch.delete(doc.ref);
+        // Añadir nuevos registros
+        document.querySelectorAll('#presente .foto').forEach(foto => {
+            const ref = fechaRef.collection('presentes').doc();
+            batch.set(ref, {
+                nombre: foto.getAttribute('data-nombre'),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-            
-            // 2. Añadir nuevos registros
-            const presentes = document.querySelectorAll('#presente .foto');
-            const ausentes = document.querySelectorAll('#ausente .foto');
-
-            if(presentes.length === 0 && ausentes.length === 0) {
-                throw new Error("No hay alumnos registrados");
-            }
-
-            presentes.forEach(foto => {
-                const ref = db.collection("asistencia").doc();
-                batch.set(ref, {
-                    nombre: foto.getAttribute('data-nombre'),
-                    estado: 'presente',
-                    timestamp: firebase.firestore.Timestamp.fromDate(inicioDia)
-                });
-            });
-
-            ausentes.forEach(foto => {
-                const ref = db.collection("asistencia").doc();
-                batch.set(ref, {
-                    nombre: foto.getAttribute('data-nombre'),
-                    estado: 'ausente',
-                    timestamp: firebase.firestore.Timestamp.fromDate(inicioDia)
-                });
-            });
-
-            return batch.commit();
-        })
-        .then(() => {
-            alert("✅ Asistencia guardada correctamente");
-            cargarFechas();
-        })
-        .catch(error => {
-            console.error("Error detallado:", error);
-            alert(`❌ Error al guardar: ${error.message}`);
         });
+
+        document.querySelectorAll('#ausente .foto').forEach(foto => {
+            const ref = fechaRef.collection('ausentes').doc();
+            batch.set(ref, {
+                nombre: foto.getAttribute('data-nombre'),
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+        });
+
+        await batch.commit();
+        alert("✅ Asistencia guardada correctamente");
+        cargarFechas();
+    } catch (error) {
+        console.error("Error al guardar:", error);
+        alert(`❌ Error al guardar: ${error.message}`);
+    }
 }
 
 /**
  * Carga la asistencia de una fecha específica
  */
-function cargarAsistencia(fecha) {
+async function cargarAsistencia(fecha) {
     if (!fecha) return;
 
     // Limpiar casillas
     document.getElementById('presente').innerHTML = '<h2><i class="fas fa-check-circle"></i> Presentes</h2>';
     document.getElementById('ausente').innerHTML = '<h2><i class="fas fa-times-circle"></i> Ausentes</h2>';
 
-    // Convertir fecha a rango de timestamps
-    const inicioDia = new Date(fecha.split('/').reverse().join('-'));
-    inicioDia.setHours(0, 0, 0, 0);
-    
-    const finDia = new Date(inicioDia);
-    finDia.setHours(23, 59, 59, 999);
+    try {
+        const [day, month, year] = fecha.split('/');
+        const fechaFormateada = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        const fechaRef = db.collection('asistencia').doc(fechaFormateada);
 
-    // Consultar Firebase
-    db.collection("asistencia")
-        .where("timestamp", ">=", inicioDia)
-        .where("timestamp", "<=", finDia)
-        .get()
-        .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                const casilla = document.getElementById(data.estado);
-                const fotoOriginal = document.querySelector(`.foto[data-nombre="${data.nombre}"]`);
-                
-                if (fotoOriginal) {
-                    const contenedor = fotoOriginal.parentElement.cloneNode(true);
-                    const foto = contenedor.querySelector('.foto');
-                    foto.style.border = data.estado === 'presente' ? '3px solid #2ecc71' : '3px solid #e74c3c';
-                    foto.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                    casilla.appendChild(contenedor);
-                }
-            });
-        })
-        .catch(error => {
-            console.error("Error cargando asistencia:", error);
+        // Cargar presentes
+        const presentesSnapshot = await fechaRef.collection('presentes').get();
+        presentesSnapshot.forEach(doc => {
+            const nombre = doc.data().nombre;
+            const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
+            if (fotoOriginal) {
+                const contenedor = fotoOriginal.parentElement.cloneNode(true);
+                const foto = contenedor.querySelector('.foto');
+                foto.style.border = '3px solid #2ecc71';
+                document.getElementById('presente').appendChild(contenedor);
+            }
         });
+
+        // Cargar ausentes
+        const ausentesSnapshot = await fechaRef.collection('ausentes').get();
+        ausentesSnapshot.forEach(doc => {
+            const nombre = doc.data().nombre;
+            const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
+            if (fotoOriginal) {
+                const contenedor = fotoOriginal.parentElement.cloneNode(true);
+                const foto = contenedor.querySelector('.foto');
+                foto.style.border = '3px solid #e74c3c';
+                document.getElementById('ausente').appendChild(contenedor);
+            }
+        });
+    } catch (error) {
+        console.error("Error cargando asistencia:", error);
+    }
 }
 
 /**
