@@ -137,10 +137,9 @@ function guardarAsistencia() {
     const inicioDia = new Date(fecha.split('/').reverse().join('-'));
     inicioDia.setHours(0, 0, 0, 0);
 
-    // Preparar batch de operaciones
     const batch = db.batch();
     
-    // 1. Eliminar registros existentes para esta fecha
+    // 1. Eliminar registros existentes
     db.collection("asistencia")
         .where("timestamp", ">=", inicioDia)
         .get()
@@ -152,6 +151,10 @@ function guardarAsistencia() {
             // 2. Añadir nuevos registros
             const presentes = document.querySelectorAll('#presente .foto');
             const ausentes = document.querySelectorAll('#ausente .foto');
+
+            if(presentes.length === 0 && ausentes.length === 0) {
+                throw new Error("No hay alumnos registrados");
+            }
 
             presentes.forEach(foto => {
                 const ref = db.collection("asistencia").doc();
@@ -175,11 +178,11 @@ function guardarAsistencia() {
         })
         .then(() => {
             alert("✅ Asistencia guardada correctamente");
-            cargarFechas(); // Actualizar el desplegable
+            cargarFechas();
         })
         .catch(error => {
-            console.error("Error al guardar:", error);
-            alert("❌ Error al guardar la asistencia");
+            console.error("Error detallado:", error);
+            alert(`❌ Error al guardar: ${error.message}`);
         });
 }
 
