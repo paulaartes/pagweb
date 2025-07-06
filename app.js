@@ -90,6 +90,15 @@ function soltar(ev) {
     const contenedor = fotoOriginal.parentElement.cloneNode(true);
     const foto = contenedor.querySelector('.foto');
     
+    // Añadir botón de borrado si no existe
+    if (!contenedor.querySelector('.btn-borrar')) {
+        const boton = document.createElement('button');
+        boton.className = 'btn-borrar';
+        boton.innerHTML = '✕';
+        boton.onclick = function() { borrarFoto(this); };
+        contenedor.appendChild(boton);
+    }
+    
     foto.style.border = estado === 'presente' ? '3px solid #2ecc71' : '3px solid #e74c3c';
     ev.target.appendChild(contenedor);
 }
@@ -99,16 +108,9 @@ function soltar(ev) {
  */
 function borrarFoto(boton) {
     const contenedor = boton.parentElement;
-    const foto = contenedor.querySelector('.foto');
+    contenedor.remove(); // Elimina directamente el contenedor
     
-    // Eliminar el contenedor directamente (no moverlo)
-    contenedor.remove();
-    
-    // Opcional: Restaurar la foto original si prefieres mantenerla
-    const fotoOriginal = document.querySelector(`.foto[data-nombre="${foto.getAttribute('data-nombre')}"]`);
-    if (fotoOriginal) {
-        fotoOriginal.style.border = '3px solid #ecf0f1';
-    }
+    // No es necesario restaurar la foto original, ya que trabajamos con clones
 }
 
 /**
@@ -116,10 +118,7 @@ function borrarFoto(boton) {
  */
 function limpiarTodo() {
     document.querySelectorAll('#presente .foto-container, #ausente .foto-container').forEach(contenedor => {
-        const foto = contenedor.querySelector('.foto');
-        foto.style.border = '3px solid #ecf0f1';
-        foto.style.boxShadow = '0 2px 5px rgba(0,0,0,0.05)';
-        document.getElementById('fotos').appendChild(contenedor);
+        contenedor.remove(); // Elimina directamente los contenedores
     });
     
     console.log("Selección limpiada");
