@@ -1,68 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Asistencia</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
         .contenedor {
             display: flex;
-            gap: 20px;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        .casilla {
+            width: 45%;
+            min-height: 500px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        #presente {
+            border: 3px dashed #4CAF50;
+        }
+        #ausente {
+            border: 3px dashed #f44336;
+        }
+        .casilla h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+        #fotos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
         }
         .foto {
             width: 100px;
             height: 100px;
-            border: 2px dashed #ccc;
-            margin: 10px;
+            object-fit: cover;
+            border-radius: 5px;
             cursor: grab;
+            border: 2px solid #ddd;
         }
-        #presentes, #ausentes {
-            width: 200px;
-            min-height: 300px;
-            border: 3px solid #4CAF50; /* Verde para presentes */
-            padding: 10px;
-        }
-        #ausentes {
-            border-color: #f44336; /* Rojo para ausentes */
+        .foto:hover {
+            transform: scale(1.05);
+            transition: transform 0.2s;
         }
     </style>
 </head>
 <body>
     <h1>Registro de Asistencia</h1>
+    
+    <div class="controls">
+        <select id="fecha-select" onchange="cargarAsistencia(this.value)">
+            <option value="">-- Selecciona fecha --</option>
+        </select>
+        <button onclick="guardarAsistencia()">Guardar Asistencia</button>
+    </div>
+
     <div class="contenedor">
-        <div id="presentes" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h2>Presentes ✅</h2>
+        <div class="casilla" id="presente" ondrop="soltar(event)" ondragover="permitirSoltar(event)">
+            <h2>Presente ✅</h2>
         </div>
-        <div id="ausentes" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <h2>Ausentes ❌</h2>
+        <div class="casilla" id="ausente" ondrop="soltar(event)" ondragover="permitirSoltar(event)">
+            <h2>Ausente ❌</h2>
         </div>
     </div>
 
     <div id="fotos">
-        <!-- Fotos de los estudiantes (arrastrables) -->
-        <img src="img/ardilla.jpg" class="foto" draggable="true" ondragstart="drag(event)" id="Pepe">
-        <img src="img/animales.jpg" class="foto" draggable="true" ondragstart="drag(event)" id="Juan">
-        <!-- Añade más fotos -->
+        <!-- Ejemplo con 2 fotos - añade las tuyas -->
+        <img src="img/ardilla.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
+             data-nombre="Juan Pérez" alt="Juan Pérez">
+        <img src="img/animales.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
+             data-nombre="María Gómez" alt="María Gómez">
+        <!-- Añade más fotos aquí -->
     </div>
 
-    <script>
-        // Funciones para Drag & Drop
-        function allowDrop(ev) {
-            ev.preventDefault();
-        }
-
-        function drag(ev) {
-            ev.dataTransfer.setData("text", ev.target.id);
-        }
-
-        function drop(ev) {
-            ev.preventDefault();
-            const id = ev.dataTransfer.getData("text");
-            const elemento = document.getElementById(id);
-            ev.target.appendChild(elemento);
-            
-            // Aquí guardarías en Firebase si lo usas
-            console.log(`Foto movida a: ${ev.target.id}`);
-        }
-    </script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
-
