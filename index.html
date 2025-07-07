@@ -245,8 +245,19 @@
   </div>
 
   <div id="fotos">
-    <!-- Las fotos de los alumnos se añadirán aquí dinámicamente -->
-  </div>
+        <!-- Ejemplo de fotos - Reemplaza con tus imágenes -->
+        <div class="foto-container">
+            <img src="img/ardilla.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
+                 data-nombre="Ana López" alt="Ana López">
+            <button class="btn-borrar" onclick="borrarFoto(this)">✕</button>
+        </div>
+        <div class="foto-container">
+            <img src="img/animales.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
+                 data-nombre="Carlos Ruiz" alt="Carlos Ruiz">
+            <button class="btn-borrar" onclick="borrarFoto(this)">✕</button>
+        </div>
+        <!-- Añade más fotos aquí -->
+    </div>
 
   <div id="tabla-datos"></div>
 
