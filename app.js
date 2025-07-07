@@ -60,7 +60,8 @@ async function cargarFechas() {
  */
 function permitirSoltar(ev) {
     ev.preventDefault();
-    ev.target.closest('.contenedor-fotos-drop').classList.add('highlight');
+    const dropZone = ev.target.closest('.contenedor-fotos-drop');
+    if (dropZone) dropZone.classList.add('highlight');
 }
 
 /**
