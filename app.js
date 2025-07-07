@@ -13,23 +13,20 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-let draggedId = null;
+let draggedElement = null;
 
-function drag(ev) {
-  draggedId = ev.target.id;
-}
+document.addEventListener("DOMContentLoaded", () => {
+  // Preparar los huecos
+  crearHuecos("zonaEscuela", 25);
+  crearHuecos("zonaCasa", 10);
 
-function allowDrop(ev) {
-  ev.preventDefault();
-}
-
-function drop(ev, slot) {
-  ev.preventDefault();
-  const img = document.getElementById(draggedId).cloneNode(true);
-  img.draggable = false;
-  slot.innerHTML = '';
-  slot.appendChild(img);
-}
+  // Configurar imágenes arrastrables
+  document.querySelectorAll(".animal").forEach(img => {
+    img.addEventListener("dragstart", (e) => {
+      draggedElement = e.target;
+    });
+  });
+});
 
 function crearHuecos(idZona, cantidad) {
   const zona = document.getElementById(idZona);
@@ -41,19 +38,23 @@ function crearHuecos(idZona, cantidad) {
   let count = 0;
   for (let y = 0; y < filas && count < cantidad; y++) {
     for (let x = 0; x < columnas && count < cantidad; x++) {
-      const slot = document.createElement('div');
-      slot.className = 'slot';
+      const slot = document.createElement("div");
+      slot.classList.add("slot");
       slot.style.left = `${x * offsetX + offsetX / 2 - 32}px`;
       slot.style.top = `${y * offsetY + offsetY / 2 - 32}px`;
-      slot.ondragover = allowDrop;
-      slot.ondrop = (e) => drop(e, slot);
+
+      slot.addEventListener("dragover", (e) => e.preventDefault());
+      slot.addEventListener("drop", () => {
+        if (draggedElement) {
+          slot.innerHTML = "";
+          const clone = draggedElement.cloneNode(true);
+          clone.draggable = false;
+          slot.appendChild(clone);
+        }
+      });
+
       zona.appendChild(slot);
       count++;
     }
   }
 }
-
-window.onload = () => {
-  crearHuecos('zonaEscuela', 25);
-  crearHuecos('zonaCasa', 10);
-};
