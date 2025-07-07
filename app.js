@@ -72,18 +72,29 @@ function arrastrar(ev) {
 /**
  * Maneja el evento de soltar una foto en una casilla
  */
-ffunction soltar(ev) {
-    ev.preventDefault();
-    const nombre = ev.dataTransfer.getData("text");
-    const dropZone = ev.target.closest('.contenedor-fotos-drop');
-    
-    if (!dropZone) return; // Verifica que existe la zona de drop
-    
-    const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]:not(#contenedor-presente .foto, #contenedor-ausente .foto)`);
-    if (!fotoOriginal) return;
-    
-    const contenedor = fotoOriginal.parentElement.cloneNode(true);
-    dropZone.appendChild(contenedor); // Ahora seguro que dropZone existe
+function soltar(ev) {
+  ev.preventDefault();
+  const nombre = ev.dataTransfer.getData("text");
+  const dropZone = ev.target.closest('.contenedor-fotos-drop');
+  
+  if (!dropZone) return;
+  
+  // Limpia el contenedor antes de agregar nueva foto
+  dropZone.innerHTML = '';
+  
+  const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
+  if (!fotoOriginal) return;
+  
+  const fotoClon = fotoOriginal.cloneNode(true);
+  fotoClon.style.border = dropZone.parentElement.id === 'presente' 
+    ? '3px solid #2ecc71' 
+    : '3px solid #e74c3c';
+  
+  // Ajusta el tamaño para que encaje en el icono
+  fotoClon.style.width = '70px';
+  fotoClon.style.height = '70px';
+  
+  dropZone.appendChild(fotoClon);
 }
 
 /**
