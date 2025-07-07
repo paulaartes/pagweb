@@ -60,6 +60,7 @@ async function cargarFechas() {
  */
 function permitirSoltar(ev) {
     ev.preventDefault();
+    ev.target.closest('.contenedor-fotos-drop').classList.add('highlight');
 }
 
 /**
@@ -73,29 +74,29 @@ function arrastrar(ev) {
  * Maneja el evento de soltar una foto en una casilla
  */
 function soltar(ev) {
-  ev.preventDefault();
-  const nombre = ev.dataTransfer.getData("text");
-  const dropZone = ev.target.closest('.contenedor-fotos-drop');
-  
-  if (!dropZone) return;
-  
-  // Limpia el contenedor antes de agregar nueva foto
-  dropZone.innerHTML = '';
-  
-  const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
-  if (!fotoOriginal) return;
-  
-  const fotoClon = fotoOriginal.cloneNode(true);
-  fotoClon.style.border = dropZone.parentElement.id === 'presente' 
-    ? '3px solid #2ecc71' 
-    : '3px solid #e74c3c';
-  
-  // Ajusta el tamaño para que encaje en el icono
-  fotoClon.style.width = '70px';
-  fotoClon.style.height = '70px';
-  
-  dropZone.appendChild(fotoClon);
+    ev.preventDefault();
+    const dropZone = ev.target.closest('.contenedor-fotos-drop');
+    dropZone.classList.remove('highlight');
+    
+    const nombre = ev.dataTransfer.getData("text");
+    if (!dropZone || !nombre) return;
+    
+    // Limpiar contenedor antes de agregar nueva foto
+    dropZone.innerHTML = '';
+    
+    const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
+    if (!fotoOriginal) return;
+    
+    const fotoClon = fotoOriginal.cloneNode(true);
+    fotoClon.style.width = '70px';
+    fotoClon.style.height = '70px';
+    fotoClon.style.border = dropZone.parentElement.id === 'presente' 
+        ? '3px solid #2ecc71' 
+        : '3px solid #e74c3c';
+    
+    dropZone.appendChild(fotoClon);
 }
+
 
 /**
  * Borra una foto individual de las casillas
@@ -281,12 +282,21 @@ function mostrarDatos() {
 // INICIALIZACIÓN
 // ======================
 document.addEventListener('DOMContentLoaded', function() {
-    // Configurar eventos
-    document.getElementById('btnGuardar').addEventListener('click', guardarAsistencia);
-    document.getElementById('btnLimpiar').addEventListener('click', limpiarTodo);
-    document.getElementById('fecha-select').addEventListener('change', function() {
-        cargarAsistencia(this.value);
+    // Configurar eventos para cada foto
+    document.querySelectorAll('.foto').forEach(foto => {
+        foto.setAttribute('draggable', 'true');
+        foto.addEventListener('dragstart', arrastrar);
     });
+    
+    // Configurar zonas de drop
+    document.querySelectorAll('.contenedor-fotos-drop').forEach(zone => {
+        zone.addEventListener('dragover', permitirSoltar);
+        zone.addEventListener('drop', soltar);
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('highlight');
+        });
+    });
+});
     
     // Cargar fechas disponibles
     cargarFechas();
