@@ -127,17 +127,19 @@ button {
 }
 
 .contenedor-fotos-drop {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 160px;
-  height: 160px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
-  transition: all 0.3s ease;
+    width: 100%;  /* Ocupa todo el ancho del casilla */
+    height: calc(100% - 60px); /* Ajusta según el espacio del título */
+    position: relative; /* Cambia de absolute a relative */
+    top: auto;
+    left: auto;
+    transform: none;
+    display: flex;
+    flex-wrap: wrap; /* Permite múltiples imágenes en fila */
+    gap: 10px;
+    padding: 10px;
+    overflow-y: auto; /* Scroll si hay muchas imágenes */
+    align-items: flex-start;
+    justify-content: center;
 }
 
 .contenedor-fotos-drop.highlight {
