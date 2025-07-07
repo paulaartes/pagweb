@@ -77,35 +77,31 @@ function soltar(ev) {
     ev.preventDefault();
     const dropZone = ev.target.closest('.contenedor-fotos-drop');
     if (!dropZone) return;
-    
-    dropZone.classList.remove('highlight');
-    
+
     const nombre = ev.dataTransfer.getData("text");
-    if (!nombre) return;
-    
-    // Buscar la foto original
     const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
     if (!fotoOriginal) return;
-    
-    // Limpiar contenedor antes de agregar nueva foto
-    dropZone.innerHTML = '';
-    
-    // Clonar el contenedor completo de la foto (incluyendo el botón)
+
+    // Verifica si la imagen ya existe en el contenedor
+    const existeEnContenedor = dropZone.querySelector(`.foto[data-nombre="${nombre}"]`);
+    if (existeEnContenedor) return; // No duplicar
+
+    // Clona el contenedor de la foto (con su botón de borrar)
     const fotoContainer = fotoOriginal.parentElement.cloneNode(true);
     const fotoClon = fotoContainer.querySelector('.foto');
-    
-    // Estilizar la foto clonada
-    fotoClon.style.width = '70px';
-    fotoClon.style.height = '70px';
-    fotoClon.style.border = dropZone.parentElement.id === 'presente' 
-        ? '3px solid #2ecc71' 
-        : '3px solid #e74c3c';
-    
-    // Configurar el botón de borrar
+
+    // Estilo para la imagen clonada
+    fotoClon.style.width = "80px";
+    fotoClon.style.height = "80px";
+    fotoClon.style.border = dropZone.id.includes('presente') 
+        ? "3px solid #2ecc71" 
+        : "3px solid #e74c3c";
+
+    // Configura el botón de borrar
     const btnBorrar = fotoContainer.querySelector('.btn-borrar');
-    btnBorrar.onclick = function() { borrarFoto(this); };
-    
-    // Agregar al contenedor de drop
+    btnBorrar.onclick = function() { this.parentElement.remove(); };
+
+    // Agrega la foto al contenedor
     dropZone.appendChild(fotoContainer);
 }
 
