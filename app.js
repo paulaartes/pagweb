@@ -76,25 +76,37 @@ function arrastrar(ev) {
 function soltar(ev) {
     ev.preventDefault();
     const dropZone = ev.target.closest('.contenedor-fotos-drop');
+    if (!dropZone) return;
+    
     dropZone.classList.remove('highlight');
     
     const nombre = ev.dataTransfer.getData("text");
-    if (!dropZone || !nombre) return;
+    if (!nombre) return;
+    
+    // Buscar la foto original
+    const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
+    if (!fotoOriginal) return;
     
     // Limpiar contenedor antes de agregar nueva foto
     dropZone.innerHTML = '';
     
-    const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]`);
-    if (!fotoOriginal) return;
+    // Clonar el contenedor completo de la foto (incluyendo el botón)
+    const fotoContainer = fotoOriginal.parentElement.cloneNode(true);
+    const fotoClon = fotoContainer.querySelector('.foto');
     
-    const fotoClon = fotoOriginal.cloneNode(true);
+    // Estilizar la foto clonada
     fotoClon.style.width = '70px';
     fotoClon.style.height = '70px';
     fotoClon.style.border = dropZone.parentElement.id === 'presente' 
         ? '3px solid #2ecc71' 
         : '3px solid #e74c3c';
     
-    dropZone.appendChild(fotoClon);
+    // Configurar el botón de borrar
+    const btnBorrar = fotoContainer.querySelector('.btn-borrar');
+    btnBorrar.onclick = function() { borrarFoto(this); };
+    
+    // Agregar al contenedor de drop
+    dropZone.appendChild(fotoContainer);
 }
 
 
@@ -282,6 +294,9 @@ function mostrarDatos() {
 // INICIALIZACIÓN
 // ======================
 document.addEventListener('DOMContentLoaded', function() {
+    // Cargar fechas disponibles
+    cargarFechas();
+    
     // Configurar eventos para cada foto
     document.querySelectorAll('.foto').forEach(foto => {
         foto.setAttribute('draggable', 'true');
@@ -295,6 +310,16 @@ document.addEventListener('DOMContentLoaded', function() {
         zone.addEventListener('dragleave', () => {
             zone.classList.remove('highlight');
         });
+    });
+    
+    // Configurar botones
+    document.getElementById('btnGuardar').addEventListener('click', guardarAsistencia);
+    document.getElementById('btnLimpiar').addEventListener('click', limpiarTodo);
+    document.getElementById('btnHistorial').addEventListener('click', mostrarDatos);
+    
+    // Configurar cambio de fecha
+    document.getElementById('fecha-select').addEventListener('change', function() {
+        cargarAsistencia(this.value);
     });
 });
     
