@@ -2,57 +2,25 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Asistencia</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1><i class="fas fa-clipboard-check"></i> Registro de Asistencia</h1>
+  <h1>📋 Registro de Asistencia</h1>
 
-  <div class="controls">
-    <select id="fecha-select">
-      <option value="">-- Selecciona fecha --</option>
-    </select>
-    <button class="btn-save" id="btnGuardar">
-      <i class="fas fa-save"></i> Guardar
-    </button>
-    <button class="btn-clear" id="btnLimpiar">
-      <i class="fas fa-trash-alt"></i> Limpiar
-    </button>
-    <button class="btn-history" id="btnHistorial" onclick="mostrarDatos()">
-      <i class="fas fa-history"></i> Ver Historial
-    </button>
+  <div class="zona" id="zonaEscuela" style="background-image: url('escuela.png');"></div>
+  <div class="zona" id="zonaCasa" style="background-image: url('casa.png');"></div>
+
+  <div class="imagenes">
+    <img src="img/animales.jpg" id="animal1" draggable="true" ondragstart="drag(event)">
+    <img src="img/ardilla.jpg" id="animal2" draggable="true" ondragstart="drag(event)">
+    <!-- Agrega más imágenes aquí -->
   </div>
 
-  <div class="contenedor">
-    <div class="casilla" id="presente" ondrop="soltar(event)" ondragover="permitirSoltar(event)">
-      <h2><i class="fas fa-check-circle"></i> Presentes</h2>
-      <div class="contenedor-fotos-drop" id="contenedor-presente"></div>
-    </div>
-    <div class="casilla" id="ausente" ondrop="soltar(event)" ondragover="permitirSoltar(event)">
-      <h2><i class="fas fa-times-circle"></i> Ausentes</h2>
-      <div class="contenedor-fotos-drop" id="contenedor-ausente"></div>
-    </div>
-  </div>
+  <script src="script.js"></script>
+</body>
+</html>
 
- <div id="fotos">
-        <!-- Ejemplo de fotos - Reemplaza con tus imágenes -->
-        <div class="foto-container">
-            <img src="img/ardilla.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
-                 data-nombre="Ana López" alt="Ana López">
-            <button class="btn-borrar" onclick="borrarFoto(this)">✕</button>
-        </div>
-        <div class="foto-container">
-            <img src="img/animales.jpg" class="foto" draggable="true" ondragstart="arrastrar(event)" 
-                 data-nombre="Carlos Ruiz" alt="Carlos Ruiz">
-            <button class="btn-borrar" onclick="borrarFoto(this)">✕</button>
-        </div>
-        <!-- Añade más fotos aquí -->
-    </div>
-
-  <div id="tabla-datos"></div>
 
 
   <!-- Firebase -->
