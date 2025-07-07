@@ -19,7 +19,8 @@ let fechaActual = new Date().toLocaleDateString('es-ES');
 // ======================
 // FUNCIONES PRINCIPALES
 // ======================
-
+const dropZone = ev.target.closest('.contenedor-fotos-drop');
+if (!fotoOriginal || !dropZone) return; // Sale si no encuentra elementos
 /**
  * Carga las fechas disponibles desde Firestore
  */
@@ -71,30 +72,18 @@ function arrastrar(ev) {
 /**
  * Maneja el evento de soltar una foto en una casilla
  */
-function soltar(ev) {
+ffunction soltar(ev) {
     ev.preventDefault();
     const nombre = ev.dataTransfer.getData("text");
-    const estado = ev.target.closest('.casilla').id;
+    const dropZone = ev.target.closest('.contenedor-fotos-drop');
     
-    // Buscar la foto ORIGINAL (no clonar si ya existe en una casilla)
+    if (!dropZone) return; // Verifica que existe la zona de drop
+    
     const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]:not(#contenedor-presente .foto, #contenedor-ausente .foto)`);
+    if (!fotoOriginal) return;
     
-    if (!fotoOriginal) return; // Si ya está en una casilla, no hacer nada
-
     const contenedor = fotoOriginal.parentElement.cloneNode(true);
-    const foto = contenedor.querySelector('.foto');
-    
-    // Añadir botón de borrado si no existe
-    if (!contenedor.querySelector('.btn-borrar')) {
-        const boton = document.createElement('button');
-        boton.className = 'btn-borrar';
-        boton.innerHTML = '✕';
-        boton.onclick = function() { borrarFoto(this); };
-        contenedor.appendChild(boton);
-    }
-    
-    foto.style.border = estado === 'presente' ? '3px solid #2ecc71' : '3px solid #e74c3c';
-    ev.target.closest('.contenedor-fotos-drop').appendChild(contenedor);
+    dropZone.appendChild(contenedor); // Ahora seguro que dropZone existe
 }
 
 /**
