@@ -74,10 +74,10 @@ function arrastrar(ev) {
 function soltar(ev) {
     ev.preventDefault();
     const nombre = ev.dataTransfer.getData("text");
-    const estado = ev.target.id;
+    const estado = ev.target.closest('.casilla').id;
     
     // Buscar la foto ORIGINAL (no clonar si ya existe en una casilla)
-    const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]:not(#presente .foto, #ausente .foto)`);
+    const fotoOriginal = document.querySelector(`.foto[data-nombre="${nombre}"]:not(#contenedor-presente .foto, #contenedor-ausente .foto)`);
     
     if (!fotoOriginal) return; // Si ya está en una casilla, no hacer nada
 
@@ -94,7 +94,7 @@ function soltar(ev) {
     }
     
     foto.style.border = estado === 'presente' ? '3px solid #2ecc71' : '3px solid #e74c3c';
-    ev.target.appendChild(contenedor);
+    ev.target.closest('.contenedor-fotos-drop').appendChild(contenedor);
 }
 
 /**
@@ -103,19 +103,15 @@ function soltar(ev) {
 function borrarFoto(boton) {
     const contenedor = boton.parentElement;
     contenedor.remove(); // Elimina directamente el contenedor
-    
-    // No es necesario restaurar la foto original, ya que trabajamos con clones
 }
 
 /**
  * Limpia todas las selecciones
  */
 function limpiarTodo() {
-    document.querySelectorAll('#presente .foto-container, #ausente .foto-container').forEach(contenedor => {
+    document.querySelectorAll('#contenedor-presente .foto-container, #contenedor-ausente .foto-container').forEach(contenedor => {
         contenedor.remove(); // Elimina directamente los contenedores
     });
-    
-    console.log("Selección limpiada");
 }
 
 /**
@@ -144,7 +140,7 @@ async function guardarAsistencia() {
         ausentesSnapshot.docs.forEach(doc => batch.delete(doc.ref));
 
         // Añadir nuevos registros
-        document.querySelectorAll('#presente .foto').forEach(foto => {
+        document.querySelectorAll('#contenedor-presente .foto').forEach(foto => {
             const ref = fechaRef.collection('presentes').doc();
             batch.set(ref, {
                 nombre: foto.getAttribute('data-nombre'),
@@ -152,7 +148,7 @@ async function guardarAsistencia() {
             });
         });
 
-        document.querySelectorAll('#ausente .foto').forEach(foto => {
+        document.querySelectorAll('#contenedor-ausente .foto').forEach(foto => {
             const ref = fechaRef.collection('ausentes').doc();
             batch.set(ref, {
                 nombre: foto.getAttribute('data-nombre'),
@@ -176,8 +172,8 @@ async function cargarAsistencia(fecha) {
     if (!fecha) return;
 
     // Limpiar casillas
-    document.getElementById('presente').innerHTML = '<h2><i class="fas fa-check-circle"></i> Presentes</h2>';
-    document.getElementById('ausente').innerHTML = '<h2><i class="fas fa-times-circle"></i> Ausentes</h2>';
+    document.getElementById('contenedor-presente').innerHTML = '';
+    document.getElementById('contenedor-ausente').innerHTML = '';
 
     try {
         const [day, month, year] = fecha.split('/');
@@ -193,7 +189,7 @@ async function cargarAsistencia(fecha) {
                 const contenedor = fotoOriginal.parentElement.cloneNode(true);
                 const foto = contenedor.querySelector('.foto');
                 foto.style.border = '3px solid #2ecc71';
-                document.getElementById('presente').appendChild(contenedor);
+                document.getElementById('contenedor-presente').appendChild(contenedor);
             }
         });
 
@@ -206,7 +202,7 @@ async function cargarAsistencia(fecha) {
                 const contenedor = fotoOriginal.parentElement.cloneNode(true);
                 const foto = contenedor.querySelector('.foto');
                 foto.style.border = '3px solid #e74c3c';
-                document.getElementById('ausente').appendChild(contenedor);
+                document.getElementById('contenedor-ausente').appendChild(contenedor);
             }
         });
     } catch (error) {
@@ -244,18 +240,32 @@ function mostrarDatos() {
 
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                const fecha = data.timestamp.toDate().toLocaleDateString('es-ES');
-                const estadoIcon = data.estado === 'presente' ? 
-                    '<i class="fas fa-check-circle" style="color:#2ecc71"></i>' : 
-                    '<i class="fas fa-times-circle" style="color:#e74c3c"></i>';
+                const fecha = new Date(doc.id.split('-').join('/')).toLocaleDateString('es-ES');
                 
-                tabla += `
-                    <tr>
-                        <td>${data.nombre}</td>
-                        <td>${estadoIcon} ${data.estado}</td>
-                        <td>${fecha}</td>
-                    </tr>
-                `;
+                // Obtener presentes y ausentes
+                if (data.presentes) {
+                    data.presentes.forEach(presente => {
+                        tabla += `
+                            <tr>
+                                <td>${presente.nombre}</td>
+                                <td><i class="fas fa-check-circle" style="color:#2ecc71"></i> Presente</td>
+                                <td>${fecha}</td>
+                            </tr>
+                        `;
+                    });
+                }
+                
+                if (data.ausentes) {
+                    data.ausentes.forEach(ausente => {
+                        tabla += `
+                            <tr>
+                                <td>${ausente.nombre}</td>
+                                <td><i class="fas fa-times-circle" style="color:#e74c3c"></i> Ausente</td>
+                                <td>${fecha}</td>
+                            </tr>
+                        `;
+                    });
+                }
             });
 
             tabla += "</tbody></table>";
@@ -271,18 +281,43 @@ function mostrarDatos() {
 // INICIALIZACIÓN
 // ======================
 document.addEventListener('DOMContentLoaded', function() {
+    // Configurar eventos
+    document.getElementById('btnGuardar').addEventListener('click', guardarAsistencia);
+    document.getElementById('btnLimpiar').addEventListener('click', limpiarTodo);
+    document.getElementById('fecha-select').addEventListener('change', function() {
+        cargarAsistencia(this.value);
+    });
     
     // Cargar fechas disponibles
     cargarFechas();
     
-    // Añadir botones de borrado a todas las fotos iniciales
-    document.querySelectorAll('.foto').forEach(foto => {
-        if (!foto.parentElement.querySelector('.btn-borrar')) {
-            const boton = document.createElement('button');
-            boton.className = 'btn-borrar';
-            boton.innerHTML = '✕';
-            boton.onclick = function() { borrarFoto(this); };
-            foto.parentElement.appendChild(boton);
-        }
+    // Cargar fotos de ejemplo (deberías reemplazar esto con tus datos reales)
+    const fotosContainer = document.getElementById('fotos');
+    const alumnos = [
+        { nombre: "Ana López", imagen: "ardilla.jpg" },
+        { nombre: "Carlos Ruiz", imagen: "animales.jpg" },
+        // Añade más alumnos según necesites
+    ];
+    
+    alumnos.forEach(alumno => {
+        const contenedor = document.createElement('div');
+        contenedor.className = 'foto-container';
+        
+        const foto = document.createElement('img');
+        foto.className = 'foto';
+        foto.src = alumno.imagen;
+        foto.setAttribute('data-nombre', alumno.nombre);
+        foto.setAttribute('draggable', 'true');
+        foto.addEventListener('dragstart', arrastrar);
+        foto.alt = alumno.nombre;
+        
+        const boton = document.createElement('button');
+        boton.className = 'btn-borrar';
+        boton.innerHTML = '✕';
+        boton.addEventListener('click', function() { borrarFoto(this); });
+        
+        contenedor.appendChild(foto);
+        contenedor.appendChild(boton);
+        fotosContainer.appendChild(contenedor);
     });
 });
