@@ -8,114 +8,257 @@
       font-family: sans-serif;
       text-align: center;
       margin-top: 20px;
+      background-color: #f5f5f5;
     }
 
-    .buildings {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      position: relative;
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
     }
 
-    .container {
-      position: relative;
-      display: inline-block;
-    }
-
-    .building-img {
-      width: 800px; /* Imágenes más grandes (antes era 300px) */
+    .school-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(5, 60px);
+      gap: 5px;
+      margin: 20px auto;
+      width: calc(8 * 60px + 7 * 5px);
+      background-color: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
     .dropzone {
-      width: 60px;  /* Ajusta según el nuevo tamaño de las ventanas */
+      width: 60px;
       height: 60px;
-      position: absolute;
-      border: 2px dashed transparent;
-      border-radius: 6px;
-      overflow: hidden;
+      border: 2px dashed #95a5a6;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ecf0f1;
+      position: relative;
+      transition: all 0.2s;
     }
 
     .dropzone:hover {
-      border-color: lightblue;
+      border-color: #3498db;
+      background-color: #d6eaf8;
+    }
+
+    .dropzone.highlight {
+      border-color: #2980b9;
+      background-color: #aed6f1;
+      transform: scale(1.05);
     }
 
     .draggable {
-      width: 100%;
-      height: 100%;
+      width: 54px;
+      height: 54px;
       cursor: grab;
       object-fit: cover;
+      border-radius: 3px;
+      border: 2px solid #bdc3c7;
+      transition: transform 0.1s;
+    }
+
+    .draggable.dragging {
+      opacity: 0.5;
+      transform: scale(0.9);
     }
 
     .animal-container {
-      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+      max-width: 800px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
-    .dropzone.drag-over {
-      border-color: blue !important;
-      background-color: rgba(173, 216, 230, 0.3);
+    .controls {
+      margin: 25px 0;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .coordinates {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      font-size: 9px;
+      color: #7f8c8d;
+      background-color: rgba(255,255,255,0.7);
+      padding: 1px 3px;
+      border-radius: 3px;
+    }
+
+    .student-counter {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #7f8c8d;
     }
   </style>
 </head>
 <body>
 
-<h2>📋 Registro de Asistencia</h2>
+<h2>📋 Registro de Asistencia - Colegio</h2>
 
-<div class="buildings">
-  <!-- Colegio (ajusta top/left según la nueva imagen) -->
-  <div class="container">
-    <img src="school.png" class="building-img" alt="Colegio">
-    <!-- Zonas de drop (posiciones recalculadas) -->
-    <div class="dropzone" style="top: 100px; left: 150px;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-    <div class="dropzone" style="top: 180px; left: 220px;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-  </div>
-
-  <!-- Casa (ajusta top/left según la nueva imagen) -->
-  <div class="container">
-    <img src="home.png" class="building-img" alt="Casa">
-    <!-- Zonas de drop (posiciones recalculadas) -->
-    <div class="dropzone" style="top: 100px; left: 90px;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-    <div class="dropzone" style="top: 180px; left: 170px;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-  </div>
+<div class="controls">
+  <button id="resetBtn">Reiniciar Posiciones</button>
+  <div class="student-counter">Estudiantes colocados: <span id="counter">0</span>/25</div>
 </div>
 
-<!-- Animales (ardillas) -->
-<div class="animal-container">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Sciurus_carolinensis_-Ottawa.jpg/80px-Sciurus_carolinensis_-Ottawa.jpg"
-       id="squirrel1" class="draggable" draggable="true">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Red_squirrel_-_Melanistic.jpg/80px-Red_squirrel_-_Melanistic.jpg"
-       id="squirrel2" class="draggable" draggable="true">
+<div class="school-grid" id="schoolGrid">
+  <!-- Las celdas se generarán con JavaScript -->
+</div>
+
+<div class="animal-container" id="animalContainer">
+  <!-- Las fotos de estudiantes se agregarán aquí -->
 </div>
 
 <script>
+  // Configuración
+  const ROWS = 5;
+  const COLS = 8;
+  const STUDENT_PHOTOS = 25;
+  
+  // Crear la cuadrícula del colegio
+  const schoolGrid = document.getElementById('schoolGrid');
+  
+  for (let row = 1; row <= ROWS; row++) {
+    for (let col = 1; col <= COLS; col++) {
+      const dropzone = document.createElement('div');
+      dropzone.className = 'dropzone';
+      dropzone.dataset.row = row;
+      dropzone.dataset.col = col;
+      
+      const coords = document.createElement('div');
+      coords.className = 'coordinates';
+      coords.textContent = `${col},${ROWS - row + 1}`;
+      
+      dropzone.appendChild(coords);
+      dropzone.addEventListener('dragover', allowDrop);
+      dropzone.addEventListener('drop', drop);
+      dropzone.addEventListener('dragenter', dragEnter);
+      dropzone.addEventListener('dragleave', dragLeave);
+      
+      schoolGrid.appendChild(dropzone);
+    }
+  }
+  
+  // Crear fotos de estudiantes (25 en total)
+  const animalContainer = document.getElementById('animalContainer');
+  
+  for (let i = 1; i <= STUDENT_PHOTOS; i++) {
+    const img = document.createElement('img');
+    img.src = `img/student${i}.jpg`; // Ruta relativa a la carpeta img
+    img.id = `student-${i}`;
+    img.className = 'draggable';
+    img.draggable = true;
+    img.dataset.originalPosition = i;
+    img.addEventListener('dragstart', dragStart);
+    
+    animalContainer.appendChild(img);
+  }
+  
+  // Botón de reinicio
+  document.getElementById('resetBtn').addEventListener('click', resetPositions);
+  
+  // Funciones de drag and drop
   function allowDrop(ev) {
     ev.preventDefault();
-    ev.target.classList.add('drag-over');
   }
-
+  
+  function dragStart(ev) {
+    ev.dataTransfer.setData("text/plain", ev.target.id);
+    ev.target.classList.add('dragging');
+  }
+  
+  function dragEnter(ev) {
+    ev.preventDefault();
+    ev.target.classList.add('highlight');
+  }
+  
   function dragLeave(ev) {
-    ev.target.classList.remove('drag-over');
+    ev.target.classList.remove('highlight');
   }
-
-  document.querySelectorAll('.draggable').forEach(el => {
-    el.addEventListener('dragstart', (ev) => {
-      ev.dataTransfer.setData("text", ev.target.id);
-    });
-  });
-
+  
   function drop(ev) {
     ev.preventDefault();
-    const data = ev.dataTransfer.getData("text");
-    const dragged = document.getElementById(data);
-    const clonedImg = dragged.cloneNode(true);
-    clonedImg.classList.add('draggable');
-    clonedImg.setAttribute('draggable', 'true');
-    clonedImg.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData("text", e.target.id);
-    });
+    ev.target.classList.remove('highlight');
+    
+    const data = ev.dataTransfer.getData("text/plain");
+    const draggedElement = document.getElementById(data);
+    
+    // Si la zona ya tiene una imagen, la devolvemos al contenedor
+    if (ev.target.children.length > 1) {
+      const existingImg = Array.from(ev.target.children).find(el => el.classList.contains('draggable'));
+      if (existingImg) {
+        animalContainer.appendChild(existingImg);
+      }
+    }
+    
+    // Limpiar y agregar la nueva imagen
     ev.target.innerHTML = '';
-    ev.target.appendChild(clonedImg);
-    ev.target.classList.remove('drag-over');
+    const coords = document.createElement('div');
+    coords.className = 'coordinates';
+    coords.textContent = `${ev.target.dataset.col},${ROWS - parseInt(ev.target.dataset.row) + 1}`;
+    
+    ev.target.appendChild(draggedElement);
+    ev.target.appendChild(coords);
+    
+    draggedElement.classList.remove('dragging');
+    updateCounter();
   }
+  
+  function resetPositions() {
+    const dropzones = document.querySelectorAll('.dropzone');
+    const draggables = document.querySelectorAll('.draggable');
+    
+    // Limpiar todas las dropzones
+    dropzones.forEach(zone => {
+      zone.innerHTML = '';
+      const coords = document.createElement('div');
+      coords.className = 'coordinates';
+      coords.textContent = `${zone.dataset.col},${ROWS - parseInt(zone.dataset.row) + 1}`;
+      zone.appendChild(coords);
+    });
+    
+    // Devolver todas las imágenes al contenedor
+    draggables.forEach(img => {
+      animalContainer.appendChild(img);
+    });
+    
+    updateCounter();
+  }
+  
+  function updateCounter() {
+    const placed = document.querySelectorAll('.dropzone .draggable').length;
+    document.getElementById('counter').textContent = placed;
+  }
+</script>
+
+</body>
+</html>
 </script>
 
 </body>
