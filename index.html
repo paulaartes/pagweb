@@ -34,6 +34,11 @@
       border-radius: 6px;
     }
 
+    .dropzone.drag-over {
+      border-color: blue;
+      background-color: rgba(173, 216, 230, 0.3);
+    }
+
     .dropzone:hover {
       border-color: lightblue;
     }
@@ -82,8 +87,9 @@
 
 <script>
   function allowDrop(ev) {
-    ev.preventDefault();
-  }
+  ev.preventDefault();
+  ev.target.classList.add('drag-over');
+}
 
   document.querySelectorAll('.draggable').forEach(el => {
     el.addEventListener('dragstart', (ev) => {
@@ -92,16 +98,20 @@
   });
 
   function drop(ev) {
-    ev.preventDefault();
-    const data = ev.dataTransfer.getData("text");
-    const dragged = document.getElementById(data);
-    ev.target.innerHTML = '';
-    ev.target.appendChild(dragged);
-  }
-</script>
+  ev.preventDefault();
+  ev.target.classList.remove('drag-over');
+  const data = ev.dataTransfer.getData("text");
+  const dragged = document.getElementById(data);
+  ev.target.innerHTML = '';
+  ev.target.appendChild(dragged);
+}
 
-</body>
-</html>
+  document.querySelectorAll('.dropzone').forEach(zone => {
+  zone.addEventListener('dragleave', (ev) => {
+    ev.target.classList.remove('drag-over');
+  });
+});
+</script>
 
 </body>
 </html>
