@@ -34,11 +34,6 @@
       border-radius: 6px;
     }
 
-    .dropzone.drag-over {
-      border-color: blue;
-      background-color: rgba(173, 216, 230, 0.3);
-    }
-
     .dropzone:hover {
       border-color: lightblue;
     }
@@ -53,6 +48,12 @@
     .animal-container {
       margin-top: 20px;
     }
+
+    /* Mejora visual al arrastrar */
+    .dropzone.drag-over {
+      border-color: blue !important;
+      background-color: rgba(173, 216, 230, 0.3);
+    }
   </style>
 </head>
 <body>
@@ -64,16 +65,16 @@
   <div class="container">
     <img src="school.png" class="building-img" alt="Colegio">
     <!-- Zonas sobre las ventanas del colegio -->
-    <div class="dropzone" style="top: 80px; left: 110px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-    <div class="dropzone" style="top: 140px; left: 170px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <div class="dropzone" style="top: 80px; left: 110px;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+    <div class="dropzone" style="top: 140px; left: 170px;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
   </div>
 
   <!-- Casa -->
   <div class="container">
     <img src="home.png" class="building-img" alt="Casa">
     <!-- Zonas sobre las ventanas de la casa -->
-    <div class="dropzone" style="top: 80px; left: 70px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-    <div class="dropzone" style="top: 140px; left: 130px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <div class="dropzone" style="top: 80px; left: 70px;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+    <div class="dropzone" style="top: 140px; left: 130px;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
   </div>
 </div>
 
@@ -87,9 +88,13 @@
 
 <script>
   function allowDrop(ev) {
-  ev.preventDefault();
-  ev.target.classList.add('drag-over');
-}
+    ev.preventDefault();
+    ev.target.classList.add('drag-over'); // Resalta la zona de drop
+  }
+
+  function dragLeave(ev) {
+    ev.target.classList.remove('drag-over'); // Quita el resaltado al salir
+  }
 
   document.querySelectorAll('.draggable').forEach(el => {
     el.addEventListener('dragstart', (ev) => {
@@ -98,22 +103,14 @@
   });
 
   function drop(ev) {
-  ev.preventDefault();
-  ev.target.classList.remove('drag-over');
-  const data = ev.dataTransfer.getData("text");
-  const dragged = document.getElementById(data);
-  ev.target.innerHTML = '';
-  ev.target.appendChild(dragged);
-}
-
-  document.querySelectorAll('.dropzone').forEach(zone => {
-  zone.addEventListener('dragleave', (ev) => {
-    ev.target.classList.remove('drag-over');
-  });
-});
+    ev.preventDefault();
+    const data = ev.dataTransfer.getData("text");
+    const dragged = document.getElementById(data);
+    ev.target.innerHTML = '';
+    ev.target.appendChild(dragged);
+    ev.target.classList.remove('drag-over'); // Quita el resaltado después de soltar
+  }
 </script>
 
 </body>
 </html>
-
-
