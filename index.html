@@ -5,190 +5,263 @@
   <title>Registro de Asistencia</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Arial', sans-serif;
       text-align: center;
-      margin-top: 20px;
-      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f7fa;
     }
 
     h2 {
       color: #2c3e50;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      font-size: 28px;
     }
 
-    .school-container {
+    .buildings-container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin: 0 auto;
+      max-width: 1300px;
+      flex-wrap: wrap;
+    }
+
+    .building {
       position: relative;
       width: 600px;
       height: 400px;
-      margin: 0 auto;
-      background-image: url('school.png');
-      background-size: cover;
-      background-position: center;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      overflow: hidden;
+      margin-bottom: 20px;
     }
 
-    .school-grid {
-      display: grid;
-      grid-template-columns: repeat(8, 60px);
-      grid-template-rows: repeat(5, 60px);
-      gap: 2px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 15px;
-      background-color: rgba(255,255,255,0.7);
-      border-radius: 8px;
+    #school {
+      background: url('school.png') no-repeat center center;
+      background-size: cover;
+    }
+
+    #house {
+      background: url('house.png') no-repeat center center;
+      background-size: cover;
     }
 
     .dropzone {
-      width: 60px;
-      height: 60px;
-      border: 2px dashed transparent;
+      position: absolute;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background-color: rgba(52, 152, 219, 0.2);
+      border: 2px dashed rgba(255,255,255,0.5);
+      transition: all 0.3s ease;
       display: flex;
       justify-content: center;
       align-items: center;
-      position: relative;
-      transition: all 0.2s;
-      background-color: rgba(255,255,255,0.5);
+      cursor: pointer;
     }
 
     .dropzone:hover {
-      border-color: #3498db;
-      background-color: rgba(214, 234, 248, 0.7);
+      background-color: rgba(52, 152, 219, 0.4);
+      border-color: #fff;
     }
 
     .dropzone.highlight {
-      border-color: #2980b9;
-      background-color: rgba(174, 214, 241, 0.7);
+      background-color: rgba(46, 204, 113, 0.4);
+      border-color: #2ecc71;
+      transform: scale(1.15);
     }
 
     .draggable {
-      width: 50px;
-      height: 50px;
-      cursor: grab;
-      object-fit: cover;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      border: 2px solid #3498db;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      background-color: white;
+      object-fit: cover;
+      border: 2px solid #fff;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      cursor: grab;
+      transition: transform 0.2s, opacity 0.2s;
     }
 
-    .animal-container {
+    .draggable.dragging {
+      opacity: 0.8;
+      transform: scale(0.85);
+    }
+
+    .students-panel {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 15px;
-      margin: 30px auto;
-      padding: 20px;
+      gap: 18px;
+      margin: 35px auto;
+      padding: 25px;
       background-color: white;
-      border-radius: 10px;
-      max-width: 800px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      max-width: 1100px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
     .controls {
-      margin: 25px 0;
+      margin: 30px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
     button {
       background-color: #3498db;
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
+      padding: 12px 24px;
+      border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
       transition: all 0.3s;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     button:hover {
       background-color: #2980b9;
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
-    .student-counter {
-      margin-top: 15px;
-      font-size: 14px;
-      color: #7f8c8d;
+    .counter {
+      margin-top: 0;
+      font-size: 18px;
+      color: #2c3e50;
       font-weight: bold;
+      background-color: rgba(255,255,255,0.8);
+      padding: 10px 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    .grid-coordinates {
+    .building-title {
       position: absolute;
-      bottom: -25px;
-      width: 100%;
-      text-align: center;
-      font-size: 12px;
-      color: #7f8c8d;
+      top: 15px;
+      left: 0;
+      right: 0;
+      color: white;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+      font-size: 20px;
+      z-index: 2;
     }
   </style>
 </head>
 <body>
 
-<h2>📋 Registro de Asistencia - Colegio</h2>
+<h2>📋 Sistema de Registro de Asistencia</h2>
 
 <div class="controls">
-  <button id="resetBtn">Reiniciar Posiciones</button>
-  <div class="student-counter">Estudiantes colocados: <span id="counter">0</span>/25</div>
+  <button id="resetSchool">Reiniciar Escuela</button>
+  <button id="resetHouse">Reiniciar Casa</button>
+  <div class="counter">Estudiantes colocados: <span id="totalCounter">0</span>/25</div>
 </div>
 
-<div class="school-container">
-  <div class="school-grid" id="schoolGrid">
-    <!-- Las celdas se generarán con JavaScript -->
+<div class="buildings-container">
+  <!-- Escuela -->
+  <div class="building" id="school">
+    <div class="building-title">Escuela Primaria</div>
+    <!-- Ventanas de la escuela - Posiciones exactas -->
+    <!-- Primera fila -->
+    <div class="dropzone" style="top: 50px; left: 90px;" data-building="school"></div>
+    <div class="dropzone" style="top: 50px; left: 190px;" data-building="school"></div>
+    <div class="dropzone" style="top: 50px; left: 290px;" data-building="school"></div>
+    
+    <!-- Segunda fila -->
+    <div class="dropzone" style="top: 100px; left: 40px;" data-building="school"></div>
+    <div class="dropzone" style="top: 100px; left: 140px;" data-building="school"></div>
+    <div class="dropzone" style="top: 100px; left: 240px;" data-building="school"></div>
+    <div class="dropzone" style="top: 100px; left: 340px;" data-building="school"></div>
+    <div class="dropzone" style="top: 100px; left: 440px;" data-building="school"></div>
+    
+    <!-- Tercera fila -->
+    <div class="dropzone" style="top: 150px; left: 40px;" data-building="school"></div>
+    <div class="dropzone" style="top: 150px; left: 140px;" data-building="school"></div>
+    <div class="dropzone" style="top: 150px; left: 240px;" data-building="school"></div>
+    <div class="dropzone" style="top: 150px; left: 340px;" data-building="school"></div>
+    <div class="dropzone" style="top: 150px; left: 440px;" data-building="school"></div>
+    
+    <!-- Cuarta fila -->
+    <div class="dropzone" style="top: 200px; left: 40px;" data-building="school"></div>
+    <div class="dropzone" style="top: 200px; left: 140px;" data-building="school"></div>
+    <div class="dropzone" style="top: 200px; left: 240px;" data-building="school"></div>
+    <div class="dropzone" style="top: 200px; left: 340px;" data-building="school"></div>
+    <div class="dropzone" style="top: 200px; left: 440px;" data-building="school"></div>
+    
+    <!-- Quinta fila -->
+    <div class="dropzone" style="top: 250px; left: 40px;" data-building="school"></div>
+    <div class="dropzone" style="top: 250px; left: 140px;" data-building="school"></div>
+    <div class="dropzone" style="top: 250px; left: 240px;" data-building="school"></div>
+    <div class="dropzone" style="top: 250px; left: 340px;" data-building="school"></div>
+    <div class="dropzone" style="top: 250px; left: 440px;" data-building="school"></div>
+    
+    <!-- Sexta fila -->
+    <div class="dropzone" style="top: 300px; left: 90px;" data-building="school"></div>
+    <div class="dropzone" style="top: 300px; left: 190px;" data-building="school"></div>
+    <div class="dropzone" style="top: 300px; left: 290px;" data-building="school"></div>
+  </div>
+
+  <!-- Casa -->
+  <div class="building" id="house">
+    <div class="building-title">Casa Estudiantil</div>
+    <!-- Ventanas de la casa - Posiciones exactas -->
+    <!-- Primera fila -->
+    <div class="dropzone" style="top: 60px; left: 40px;" data-building="house"></div>
+    <div class="dropzone" style="top: 60px; left: 130px;" data-building="house"></div>
+    
+    <!-- Segunda fila -->
+    <div class="dropzone" style="top: 130px; left: 20px;" data-building="house"></div>
+    <div class="dropzone" style="top: 130px; left: 100px;" data-building="house"></div>
+    <div class="dropzone" style="top: 130px; left: 180px;" data-building="house"></div>
+    
+    <!-- Tercera fila -->
+    <div class="dropzone" style="top: 200px; left: 20px;" data-building="house"></div>
+    <div class="dropzone" style="top: 200px; left: 100px;" data-building="house"></div>
+    <div class="dropzone" style="top: 200px; left: 180px;" data-building="house"></div>
   </div>
 </div>
 
-<div class="animal-container" id="animalContainer">
+<!-- Panel de estudiantes -->
+<div class="students-panel" id="studentsPanel">
   <!-- Las fotos de estudiantes se agregarán aquí -->
 </div>
 
 <script>
   // Configuración
-  const ROWS = 5;
-  const COLS = 8;
-  const STUDENT_PHOTOS = 25;
+  const TOTAL_STUDENTS = 25;
+  let placedStudents = 0;
   
-  // Crear la cuadrícula del colegio
-  const schoolGrid = document.getElementById('schoolGrid');
+  // Inicializar dropzones
+  document.querySelectorAll('.dropzone').forEach(zone => {
+    zone.addEventListener('dragover', allowDrop);
+    zone.addEventListener('drop', drop);
+    zone.addEventListener('dragenter', dragEnter);
+    zone.addEventListener('dragleave', dragLeave);
+  });
   
-  for (let row = 1; row <= ROWS; row++) {
-    for (let col = 1; col <= COLS; col++) {
-      const dropzone = document.createElement('div');
-      dropzone.className = 'dropzone';
-      dropzone.dataset.row = row;
-      dropzone.dataset.col = col;
-      
-      // Coordenadas visibles solo al inspeccionar
-      dropzone.title = `Fila ${ROWS - row + 1}, Columna ${col}`;
-      
-      dropzone.addEventListener('dragover', allowDrop);
-      dropzone.addEventListener('drop', drop);
-      dropzone.addEventListener('dragenter', dragEnter);
-      dropzone.addEventListener('dragleave', dragLeave);
-      
-      schoolGrid.appendChild(dropzone);
-    }
-  }
+  // Crear fotos de estudiantes
+  const studentsPanel = document.getElementById('studentsPanel');
   
-  // Crear fotos de estudiantes (25 en total)
-  const animalContainer = document.getElementById('animalContainer');
-  
-  for (let i = 1; i <= STUDENT_PHOTOS; i++) {
+  for (let i = 1; i <= TOTAL_STUDENTS; i++) {
     const img = document.createElement('img');
-    img.src = `img/student${i}.jpg`; // Ruta relativa a la carpeta img
+    img.src = `img/student${i}.jpg`;
     img.id = `student-${i}`;
     img.className = 'draggable';
     img.draggable = true;
-    img.dataset.originalPosition = i;
     img.addEventListener('dragstart', dragStart);
     
-    animalContainer.appendChild(img);
+    studentsPanel.appendChild(img);
   }
   
-  // Botón de reinicio
-  document.getElementById('resetBtn').addEventListener('click', resetPositions);
+  // Botones de reinicio
+  document.getElementById('resetSchool').addEventListener('click', () => resetBuilding('school'));
+  document.getElementById('resetHouse').addEventListener('click', () => resetBuilding('house'));
   
   // Funciones de drag and drop
   function allowDrop(ev) {
@@ -216,41 +289,46 @@
     const data = ev.dataTransfer.getData("text/plain");
     const draggedElement = document.getElementById(data);
     
-    // Si la zona ya tiene una imagen, la devolvemos al contenedor
-    const existingImg = ev.target.querySelector('.draggable');
-    if (existingImg) {
-      animalContainer.appendChild(existingImg);
+    // Si la zona ya tiene un estudiante, lo devolvemos al panel
+    const existingStudent = ev.target.querySelector('.draggable');
+    if (existingStudent) {
+      studentsPanel.appendChild(existingStudent);
+      placedStudents--;
     }
     
-    // Agregar la nueva imagen
+    // Si estamos moviendo un estudiante que ya estaba colocado
+    if (draggedElement.parentElement.classList.contains('dropzone')) {
+      placedStudents--;
+    }
+    
+    // Colocar el nuevo estudiante
     ev.target.appendChild(draggedElement);
     draggedElement.classList.remove('dragging');
+    
+    // Actualizar contador
+    placedStudents++;
     updateCounter();
   }
   
-  function resetPositions() {
-    const dropzones = document.querySelectorAll('.dropzone');
-    const draggables = document.querySelectorAll('.draggable');
+  function resetBuilding(building) {
+    const dropzones = document.querySelectorAll(`.dropzone[data-building="${building}"]`);
+    let studentsRemoved = 0;
     
-    // Limpiar todas las dropzones
     dropzones.forEach(zone => {
-      const img = zone.querySelector('.draggable');
-      if (img) {
-        animalContainer.appendChild(img);
+      const student = zone.querySelector('.draggable');
+      if (student) {
+        studentsPanel.appendChild(student);
+        studentsRemoved++;
       }
     });
     
+    placedStudents -= studentsRemoved;
     updateCounter();
   }
   
   function updateCounter() {
-    const placed = document.querySelectorAll('.dropzone .draggable').length;
-    document.getElementById('counter').textContent = placed;
+    document.getElementById('totalCounter').textContent = placedStudents;
   }
-</script>
-
-</body>
-</html>
 </script>
 
 </body>
