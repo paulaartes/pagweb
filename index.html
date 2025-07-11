@@ -63,6 +63,12 @@
       cursor: pointer;
     }
 
+    /* Dropzones más grandes SOLO para la casa */
+    #house .dropzone {
+      width: 50px;
+      height: 50px;
+    }
+
     .dropzone:hover {
       background-color: rgba(52, 152, 219, 0.4);
       border-color: #fff;
@@ -78,10 +84,16 @@
       width: 30px;
       height: 30px;
       object-fit: cover;
-      border: 3px solid #fff;
+      border: none;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       cursor: grab;
       transition: transform 0.2s, opacity 0.2s;
+    }
+
+    /* Ajuste para imágenes dentro de dropzones de la casa */
+    #house .dropzone .draggable {
+      width: 46px;
+      height: 46px;
     }
 
     .draggable.dragging {
