@@ -10,20 +10,28 @@
       margin-top: 20px;
     }
 
+    .buildings {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      position: relative;
+    }
+
     .container {
       position: relative;
       display: inline-block;
     }
 
-    #fondo {
-      width: 800px;
+    .building-img {
+      width: 300px;
     }
 
     .dropzone {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       position: absolute;
       border: 2px dashed transparent;
+      border-radius: 6px;
     }
 
     .dropzone:hover {
@@ -31,8 +39,8 @@
     }
 
     .draggable {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       cursor: grab;
       margin: 10px;
     }
@@ -46,20 +54,29 @@
 
 <h2>📋 Registro de Asistencia</h2>
 
-<div class="container">
-  <img id="fondo" src="476d45f3-8a45-4836-a4c9-e0d1cc929565.png" alt="Colegio y Casa">
+<div class="buildings">
+  <!-- Colegio -->
+  <div class="container">
+    <img src="school.png" class="building-img" alt="Colegio">
+    <!-- Zonas sobre las ventanas del colegio -->
+    <div class="dropzone" style="top: 80px; left: 110px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <div class="dropzone" style="top: 140px; left: 170px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+  </div>
 
-  <!-- Zonas de soltar en algunas ventanas -->
-  <div class="dropzone" style="top: 80px; left: 190px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-  <div class="dropzone" style="top: 140px; left: 250px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-  <div class="dropzone" style="top: 140px; left: 620px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+  <!-- Casa -->
+  <div class="container">
+    <img src="home.png" class="building-img" alt="Casa">
+    <!-- Zonas sobre las ventanas de la casa -->
+    <div class="dropzone" style="top: 80px; left: 70px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <div class="dropzone" style="top: 140px; left: 130px;" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+  </div>
 </div>
 
-<!-- Animales arrastrables -->
+<!-- Animales -->
 <div class="animal-container">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Sciurus_carolinensis_-Ottawa.jpg/120px-Sciurus_carolinensis_-Ottawa.jpg"
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Sciurus_carolinensis_-Ottawa.jpg/80px-Sciurus_carolinensis_-Ottawa.jpg"
        id="squirrel1" class="draggable" draggable="true">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Red_squirrel_-_Melanistic.jpg/120px-Red_squirrel_-_Melanistic.jpg"
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Red_squirrel_-_Melanistic.jpg/80px-Red_squirrel_-_Melanistic.jpg"
        id="squirrel2" class="draggable" draggable="true">
 </div>
 
@@ -82,6 +99,9 @@
     ev.target.appendChild(dragged);
   }
 </script>
+
+</body>
+</html>
 
 </body>
 </html>
