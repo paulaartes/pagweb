@@ -29,8 +29,8 @@
 
     .building {
       position: relative;
-      width: 600px;
-      height: 400px;
+      width: 700px; /* Más grande */
+      height: 500px; /* Más grande */
       border-radius: 12px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.15);
       overflow: hidden;
@@ -38,27 +38,27 @@
     }
 
     #school {
-      background: url('school.png') no-repeat center center;
+      background: url('img/school.png') no-repeat center center;
       background-size: cover;
     }
 
     #house {
-      background: url('home.png') no-repeat center center;
+      background: url('img/house.png') no-repeat center center;
       background-size: cover;
     }
 
     .dropzone {
       position: absolute;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
+      width: 70px; /* Más grande */
+      height: 70px; /* Más grande */
       background-color: rgba(52, 152, 219, 0.2);
-      border: 2px dashed rgba(255,255,255,0.5);
+      border: 3px dashed rgba(255,255,255,0.7); /* Más grueso */
       transition: all 0.3s ease;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      /* Eliminamos border-radius para hacerlo cuadrado */
     }
 
     .dropzone:hover {
@@ -69,32 +69,32 @@
     .dropzone.highlight {
       background-color: rgba(46, 204, 113, 0.4);
       border-color: #2ecc71;
-      transform: scale(1.15);
+      transform: scale(1.1);
     }
 
     .draggable {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
+      width: 64px; /* Más grande */
+      height: 64px; /* Más grande */
       object-fit: cover;
-      border: 2px solid #fff;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      border: 3px solid #fff; /* Más grueso */
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Más pronunciada */
       cursor: grab;
       transition: transform 0.2s, opacity 0.2s;
+      /* Eliminamos border-radius para hacerlo cuadrado */
     }
 
     .draggable.dragging {
       opacity: 0.8;
-      transform: scale(0.85);
+      transform: scale(0.9);
     }
 
     .students-panel {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 18px;
+      gap: 20px; /* Más espacio */
       margin: 35px auto;
-      padding: 25px;
+      padding: 30px; /* Más grande */
       background-color: white;
       border-radius: 12px;
       max-width: 1100px;
@@ -142,13 +142,13 @@
 
     .building-title {
       position: absolute;
-      top: 15px;
+      top: 20px;
       left: 0;
       right: 0;
       color: white;
       font-weight: bold;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-      font-size: 20px;
+      font-size: 24px; /* Más grande */
       z-index: 2;
     }
   </style>
@@ -164,70 +164,65 @@
 </div>
 
 <div class="buildings-container">
-  <!-- Escuela -->
+  <!-- Escuela - con posiciones ajustadas para el nuevo tamaño -->
   <div class="building" id="school">
     <div class="building-title">Escuela Primaria</div>
-    <!-- Ventanas de la escuela - Posiciones exactas -->
-    <!-- Primera fila -->
-    <div class="dropzone" style="top: 50px; left: 90px;" data-building="school"></div>
-    <div class="dropzone" style="top: 50px; left: 190px;" data-building="school"></div>
-    <div class="dropzone" style="top: 50px; left: 290px;" data-building="school"></div>
-    
-    <!-- Segunda fila -->
-    <div class="dropzone" style="top: 100px; left: 40px;" data-building="school"></div>
-    <div class="dropzone" style="top: 100px; left: 140px;" data-building="school"></div>
-    <div class="dropzone" style="top: 100px; left: 240px;" data-building="school"></div>
-    <div class="dropzone" style="top: 100px; left: 340px;" data-building="school"></div>
-    <div class="dropzone" style="top: 100px; left: 440px;" data-building="school"></div>
-    
-    <!-- Tercera fila -->
-    <div class="dropzone" style="top: 150px; left: 40px;" data-building="school"></div>
-    <div class="dropzone" style="top: 150px; left: 140px;" data-building="school"></div>
-    <div class="dropzone" style="top: 150px; left: 240px;" data-building="school"></div>
-    <div class="dropzone" style="top: 150px; left: 340px;" data-building="school"></div>
-    <div class="dropzone" style="top: 150px; left: 440px;" data-building="school"></div>
-    
-    <!-- Cuarta fila -->
-    <div class="dropzone" style="top: 200px; left: 40px;" data-building="school"></div>
-    <div class="dropzone" style="top: 200px; left: 140px;" data-building="school"></div>
-    <div class="dropzone" style="top: 200px; left: 240px;" data-building="school"></div>
-    <div class="dropzone" style="top: 200px; left: 340px;" data-building="school"></div>
-    <div class="dropzone" style="top: 200px; left: 440px;" data-building="school"></div>
-    
-    <!-- Quinta fila -->
-    <div class="dropzone" style="top: 250px; left: 40px;" data-building="school"></div>
-    <div class="dropzone" style="top: 250px; left: 140px;" data-building="school"></div>
-    <div class="dropzone" style="top: 250px; left: 240px;" data-building="school"></div>
-    <div class="dropzone" style="top: 250px; left: 340px;" data-building="school"></div>
-    <div class="dropzone" style="top: 250px; left: 440px;" data-building="school"></div>
-    
-    <!-- Sexta fila -->
-    <div class="dropzone" style="top: 300px; left: 90px;" data-building="school"></div>
-    <div class="dropzone" style="top: 300px; left: 190px;" data-building="school"></div>
-    <div class="dropzone" style="top: 300px; left: 290px;" data-building="school"></div>
+    <!-- Ajusté las posiciones para el nuevo tamaño -->
+   <!-- Fila 1 -->
+  <div class="dropzone" style="top: 85px; left: 35px;"></div>
+  <div class="dropzone" style="top: 85px; left: 75px;"></div>
+  <div class="dropzone" style="top: 85px; left: 115px;"></div>
+  <div class="dropzone" style="top: 85px; left: 155px;"></div>
+  <div class="dropzone" style="top: 85px; left: 195px;"></div>
+
+  <!-- Fila 2 -->
+  <div class="dropzone" style="top: 115px; left: 35px;"></div>
+  <div class="dropzone" style="top: 115px; left: 75px;"></div>
+  <div class="dropzone" style="top: 115px; left: 115px;"></div>
+  <div class="dropzone" style="top: 115px; left: 155px;"></div>
+  <div class="dropzone" style="top: 115px; left: 195px;"></div>
+
+  <!-- Fila 3 -->
+  <div class="dropzone" style="top: 145px; left: 35px;"></div>
+  <div class="dropzone" style="top: 145px; left: 75px;"></div>
+  <div class="dropzone" style="top: 145px; left: 115px;"></div>
+  <div class="dropzone" style="top: 145px; left: 155px;"></div>
+  <div class="dropzone" style="top: 145px; left: 195px;"></div>
+
+  <!-- Fila 4 -->
+  <div class="dropzone" style="top: 175px; left: 35px;"></div>
+  <div class="dropzone" style="top: 175px; left: 75px;"></div>
+  <div class="dropzone" style="top: 175px; left: 115px;"></div>
+  <div class="dropzone" style="top: 175px; left: 155px;"></div>
+  <div class="dropzone" style="top: 175px; left: 195px;"></div>
+
+  <!-- Fila 5 -->
+  <div class="dropzone" style="top: 205px; left: 35px;"></div>
+  <div class="dropzone" style="top: 205px; left: 75px;"></div>
+  <div class="dropzone" style="top: 205px; left: 115px;"></div>
+  <div class="dropzone" style="top: 205px; left: 155px;"></div>
+  <div class="dropzone" style="top: 205px; left: 195px;"></div>
   </div>
 
-  <!-- Casa -->
+  <!-- Casa - con posiciones ajustadas para el nuevo tamaño -->
   <div class="building" id="house">
     <div class="building-title">Casa Estudiantil</div>
-    <!-- Ventanas de la casa - Posiciones exactas -->
-    <!-- Primera fila -->
-    <div class="dropzone" style="top: 60px; left: 40px;" data-building="house"></div>
-    <div class="dropzone" style="top: 60px; left: 130px;" data-building="house"></div>
-    
-    <!-- Segunda fila -->
-    <div class="dropzone" style="top: 130px; left: 20px;" data-building="house"></div>
-    <div class="dropzone" style="top: 130px; left: 100px;" data-building="house"></div>
-    <div class="dropzone" style="top: 130px; left: 180px;" data-building="house"></div>
-    
-    <!-- Tercera fila -->
-    <div class="dropzone" style="top: 200px; left: 20px;" data-building="house"></div>
-    <div class="dropzone" style="top: 200px; left: 100px;" data-building="house"></div>
-    <div class="dropzone" style="top: 200px; left: 180px;" data-building="house"></div>
+    <!-- Ajusté las posiciones para el nuevo tamaño -->
+     <!-- Parte izquierda (3 ventanas) -->
+  <div class="dropzone" style="top: 65px; left: 65px;"></div>
+  <div class="dropzone" style="top: 115px; left: 65px;"></div>
+  <div class="dropzone" style="top: 165px; left: 65px;"></div>
+
+  <!-- Parte derecha (5 ventanas) -->
+  <div class="dropzone" style="top: 65px; left: 165px;"></div>
+  <div class="dropzone" style="top: 65px; left: 205px;"></div>
+  <div class="dropzone" style="top: 115px; left: 165px;"></div>
+  <div class="dropzone" style="top: 115px; left: 205px;"></div>
+  <div class="dropzone" style="top: 165px; left: 205px;"></div>
   </div>
 </div>
 
-<!-- Panel de estudiantes -->
+<!-- Panel de estudiantes - ahora con fotos más grandes -->
 <div class="students-panel" id="studentsPanel">
   <!-- Las fotos de estudiantes se agregarán aquí -->
 </div>
@@ -245,7 +240,7 @@
     zone.addEventListener('dragleave', dragLeave);
   });
   
-  // Crear fotos de estudiantes
+  // Crear fotos de estudiantes (más grandes)
   const studentsPanel = document.getElementById('studentsPanel');
   
   for (let i = 1; i <= TOTAL_STUDENTS; i++) {
