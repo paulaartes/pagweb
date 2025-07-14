@@ -312,7 +312,7 @@
 
   // Inicializar Firebase
   firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
+  const db = firebase.firestore();
 
   // Configuración de la aplicación
   const TOTAL_STUDENTS = 25;
@@ -453,7 +453,7 @@
     };
     
     // Guardar en Firebase
-    database.ref('attendance/' + date).set(attendanceData)
+    db.collection("attendance").doc(date).set(attendanceData)
       .then(() => {
         showStatus('Asistencia guardada correctamente', 'success');
       })
@@ -475,7 +475,7 @@
     resetBuilding('house');
     
     // Cargar datos de Firebase
-    database.ref('attendance/' + date).once('value')
+    db.collection("attendance").doc(date).get()
       .then(snapshot => {
         const data = snapshot.val();
         
