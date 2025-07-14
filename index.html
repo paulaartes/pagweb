@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <title>Registro de Asistencia</title>
   <!-- Agrega los SDK de Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore-compat.js"></script>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -453,13 +453,11 @@
     };
     
     // Guardar en Firebase
-    db.collection("attendance").doc(date).set(attendanceData)
-      .then(() => {
-        showStatus('Asistencia guardada correctamente', 'success');
-      })
-      .catch(error => {
-        showStatus('Error al guardar la asistencia: ' + error.message, 'error');
-      });
+    db.collection("asistencia").doc(fecha).set({
+      presentes: [...],
+      ausentes: [...],
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
   }
   
   // Función para cargar la asistencia desde Firebase
@@ -475,9 +473,9 @@
     resetBuilding('house');
     
     // Cargar datos de Firebase
-    db.collection("attendance").doc(date).get()
-      .then(snapshot => {
-        const data = snapshot.val();
+    db.collection("asistencia").doc(fecha).get().then((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
         
         if (data) {
           // Colocar estudiantes presentes en la escuela
