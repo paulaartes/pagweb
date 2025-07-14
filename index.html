@@ -334,27 +334,41 @@
     
     // Crear fotos de estudiantes
     const studentsPanel = document.getElementById('studentsPanel');
-    
+  
+    // Limpiar panel (por si acaso)
+    studentsPanel.innerHTML = '';
+  
     for (let i = 1; i <= TOTAL_STUDENTS; i++) {
-      const img = document.createElement('img');
-      img.src = `img/student${i}.jpg`;
+      const img = new Image(); // Mejor que createElement('img')
+      img.src = `img/student${i}.jpg?nocache=${Date.now()}`; // Evita caché
+      img.onerror = () => {
+        img.src = 'data:image/svg+xml;base64,PHN2Zy...'; // Imagen de respaldo
+        console.error(`Error carga: student${i}.jpg`);
+      };
       img.id = `student-${i}`;
       img.className = 'draggable';
       img.draggable = true;
-      img.dataset.studentId = i; // Almacenar el ID del estudiante
+      img.dataset.studentId = i;
+      img.style.cssText = 'display: block; width: 60px; height: 60px;'; // Fuerza estilos
       img.addEventListener('dragstart', dragStart);
       
       studentsPanel.appendChild(img);
     }
+  
+    // 2. Luego inicializar eventos y Firebase
+    document.getElementById('attendanceDate').value = new Date().toISOString().split('T')[0];
     
-    // Event listeners para los botones
+    // 3. Configurar eventos (esto SÍ debe mantenerse)
     document.getElementById('resetSchool').addEventListener('click', () => resetBuilding('school'));
     document.getElementById('resetHouse').addEventListener('click', () => resetBuilding('house'));
     document.getElementById('saveAttendance').addEventListener('click', saveAttendance);
     document.getElementById('loadAttendance').addEventListener('click', loadAttendance);
+  
+    // 4. Cargar datos CON RETRASO (para asegurar que las imágenes existan)
+    setTimeout(() => {
+      loadAttendance();
+    }, 300); // 300ms de margen
     
-    // Cargar la asistencia del día actual al iniciar
-    loadAttendance();
   });
   
   // Funciones de drag and drop
