@@ -4,6 +4,9 @@ let placedStudents = 0;
 
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
+  // Ajustar escala inicial
+  adjustScale();
+  
   // Asegurar que todos los dropzones mantengan su aspecto
   const allDropzones = document.querySelectorAll('.dropzone');
   
@@ -42,6 +45,21 @@ document.addEventListener('DOMContentLoaded', function() {
   // Ajustar posiciones iniciales
   updateDropzonePositions();
 });
+
+function adjustScale() {
+    const school = document.getElementById('school');
+    const house = document.getElementById('house');
+    const windowWidth = window.innerWidth;
+    
+    // Factor de escala basado en ancho de ventana
+    const scale = Math.min(1, windowWidth / 1000);
+    
+    school.style.transform = `scale(${scale})`;
+    house.style.transform = `scale(${scale})`;
+    
+    // Actualizar posiciones después de escalar
+    updateDropzonePositions();
+}
 
 // Funciones de drag and drop
 function allowDrop(ev) {
@@ -151,9 +169,14 @@ function handleImageSizing() {
   });
 }
 
-// Ejecutar al cargar y al redimensionar
-window.addEventListener('load', adjustImages);
-window.addEventListener('resize', adjustImages);
+// Event listeners combinados
+window.addEventListener('load', function() {
+  adjustImages();
+  adjustScale();
+});
 
-// Escuchar cambios de tamaño de ventana
-window.addEventListener('resize', updateDropzonePositions);
+window.addEventListener('resize', function() {
+  adjustScale();
+  updateDropzonePositions();
+  adjustImages();
+});
