@@ -128,6 +128,20 @@ function adjustImages() {
   });
 }
 
+function handleImageSizing() {
+  // Restaurar tamaño original al devolver al panel
+  document.querySelectorAll('.students-panel .draggable').forEach(img => {
+    img.style.width = '';
+    img.style.height = '';
+  });
+  
+  // Asegurar tamaño correcto en dropzones
+  document.querySelectorAll('.dropzone .draggable').forEach(img => {
+    img.style.width = '100%';
+    img.style.height = '100%';
+  });
+}
+
 // Ejecutar al cargar y al redimensionar
 window.addEventListener('load', adjustImages);
 window.addEventListener('resize', adjustImages);
