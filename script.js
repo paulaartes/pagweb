@@ -116,5 +116,21 @@ function updateDropzonePositions() {
   // Las posiciones ya están en porcentajes en el HTML, no necesitamos recalcular
 }
 
+function adjustImages() {
+  // Para la escuela
+  document.querySelectorAll('#school .dropzone .draggable').forEach(img => {
+    img.style.objectFit = 'cover';
+  });
+  
+  // Para la casa
+  document.querySelectorAll('#house .dropzone .draggable').forEach(img => {
+    img.style.objectFit = 'cover';
+  });
+}
+
+// Ejecutar al cargar y al redimensionar
+window.addEventListener('load', adjustImages);
+window.addEventListener('resize', adjustImages);
+
 // Escuchar cambios de tamaño de ventana
 window.addEventListener('resize', updateDropzonePositions);
