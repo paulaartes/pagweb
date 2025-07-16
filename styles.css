@@ -1,0 +1,243 @@
+/* Estilos base */
+body {
+  font-family: 'Arial', sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f7fa;
+}
+
+h2 {
+  color: #2c3e50;
+  margin-bottom: 25px;
+  font-size: 1.75rem;
+}
+
+/* Contenedores */
+.buildings-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 30px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  flex-wrap: wrap;
+  max-width: 1200px;
+}
+
+/* Edificios */
+.building {
+  position: relative;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+#school {
+  width: 600px;
+  height: 550px;
+  background: url('school.png') no-repeat center center;
+  background-size: cover;
+}
+
+#house {
+  width: 400px;
+  height: 400px;
+  background: url('casa.png') no-repeat center center;
+  background-size: cover;
+}
+
+/* Títulos de edificios */
+.building-title {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  font-size: 1.5rem;
+  z-index: 2;
+}
+
+/* Casillas (Dropzones) */
+.dropzone {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  border: 3px dashed transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+}
+
+#house .dropzone {
+  width: 35px;
+  height: 35px;
+}
+
+.dropzone:hover {
+  background-color: rgba(52, 152, 219, 0.4);
+  border-color: #fff;
+}
+
+.dropzone.highlight {
+  background-color: rgba(46, 204, 113, 0.4);
+  border-color: #2ecc71;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Posiciones exactas para la escuela (600x550px) */
+#school .dropzone:nth-child(1) { top: 50%; left: 13%; }
+#school .dropzone:nth-child(2) { top: 50%; left: 21.83%; }
+#school .dropzone:nth-child(3) { top: 50%; left: 31%; }
+#school .dropzone:nth-child(4) { top: 50%; left: 40%; }
+#school .dropzone:nth-child(5) { top: 50%; left: 47.17%; }
+#school .dropzone:nth-child(6) { top: 50%; left: 54.33%; }
+#school .dropzone:nth-child(7) { top: 50%; left: 63.33%; }
+#school .dropzone:nth-child(8) { top: 50%; left: 72.17%; }
+#school .dropzone:nth-child(9) { top: 50%; left: 81.17%; }
+
+#school .dropzone:nth-child(10) { top: 59.09%; left: 13%; }
+#school .dropzone:nth-child(11) { top: 59.09%; left: 21.83%; }
+#school .dropzone:nth-child(12) { top: 59.09%; left: 31%; }
+#school .dropzone:nth-child(13) { top: 59.09%; left: 40%; }
+#school .dropzone:nth-child(14) { top: 59.09%; left: 47.17%; }
+#school .dropzone:nth-child(15) { top: 59.09%; left: 54.33%; }
+#school .dropzone:nth-child(16) { top: 59.09%; left: 63.33%; }
+#school .dropzone:nth-child(17) { top: 59.09%; left: 72.17%; }
+#school .dropzone:nth-child(18) { top: 59.09%; left: 81.17%; }
+
+#school .dropzone:nth-child(19) { top: 68.55%; left: 13%; }
+#school .dropzone:nth-child(20) { top: 68.55%; left: 21.83%; }
+#school .dropzone:nth-child(21) { top: 68.55%; left: 31%; }
+#school .dropzone:nth-child(22) { top: 68.55%; left: 63.33%; }
+#school .dropzone:nth-child(23) { top: 68.55%; left: 72.17%; }
+#school .dropzone:nth-child(24) { top: 68.55%; left: 81.17%; }
+
+#school .dropzone:nth-child(25) { top: 77.64%; left: 13%; }
+#school .dropzone:nth-child(26) { top: 77.64%; left: 21.83%; }
+#school .dropzone:nth-child(27) { top: 77.64%; left: 31%; }
+#school .dropzone:nth-child(28) { top: 77.64%; left: 63.33%; }
+#school .dropzone:nth-child(29) { top: 77.64%; left: 72.17%; }
+#school .dropzone:nth-child(30) { top: 77.64%; left: 81.17%; }
+
+/* Posiciones exactas para la casa (400x400px) */
+#house .dropzone:nth-child(1) { top: 38.25%; left: 21.25%; }
+#house .dropzone:nth-child(2) { top: 38.25%; left: 33.75%; }
+#house .dropzone:nth-child(3) { top: 38.25%; left: 45.75%; }
+#house .dropzone:nth-child(4) { top: 38.25%; left: 57.5%; }
+#house .dropzone:nth-child(5) { top: 38.25%; left: 68.75%; }
+
+#house .dropzone:nth-child(6) { top: 52.5%; left: 21.25%; }
+#house .dropzone:nth-child(7) { top: 52.5%; left: 33.75%; }
+#house .dropzone:nth-child(8) { top: 52.5%; left: 45.75%; }
+#house .dropzone:nth-child(9) { top: 52.5%; left: 57.5%; }
+#house .dropzone:nth-child(10) { top: 52.5%; left: 68.75%; }
+
+#house .dropzone:nth-child(11) { top: 67.5%; left: 21.25%; }
+#house .dropzone:nth-child(12) { top: 67.5%; left: 33.75%; }
+#house .dropzone:nth-child(13) { top: 67.5%; left: 57.5%; }
+#house .dropzone:nth-child(14) { top: 67.5%; left: 68.75%; }
+
+/* Imágenes de estudiantes */
+.draggable {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: grab;
+  transition: all 0.3s ease;
+}
+
+.dropzone .draggable {
+  width: 100%;
+  height: 100%;
+}
+
+.draggable.dragging {
+  opacity: 0.8;
+  transform: scale(0.9);
+}
+
+/* Panel de estudiantes */
+.students-panel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  max-width: 800px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Controles */
+.controls {
+  margin: 30px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+button:hover {
+  background-color: #2980b9;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.counter {
+  margin-top: 0;
+  font-size: 1.125rem;
+  color: #2c3e50;
+  font-weight: bold;
+  background-color: rgba(255,255,255,0.8);
+  padding: 10px 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Responsive para móviles */
+@media (max-width: 768px) {
+  .building {
+    transform: scale(0.85);
+    margin-bottom: 15px;
+  }
+  
+  .draggable {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .students-panel {
+    gap: 10px;
+    padding: 15px;
+  }
+  
+  .controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
