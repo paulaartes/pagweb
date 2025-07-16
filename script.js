@@ -86,6 +86,11 @@ function drop(ev) {
   
   const data = ev.dataTransfer.getData("text/plain");
   const draggedElement = document.getElementById(data);
+
+   // Asegurar que el elemento sea visible y bien posicionado
+  draggedElement.style.width = '100%';
+  draggedElement.style.height = '100%';
+  draggedElement.style.position = 'static';
   
   // Si la zona ya tiene un estudiante, lo devolvemos al panel
   const existingStudent = ev.target.querySelector('.draggable');
