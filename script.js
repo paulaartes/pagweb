@@ -2,29 +2,77 @@
 const TOTAL_STUDENTS = 25;
 let placedStudents = 0;
 
-// Inicializar la aplicación cuando el DOM esté cargado
+// Posiciones de los dropzones
+const dropzonePositions = {
+  school: [
+    // Fila 1
+    { top: 275, left: 78 }, { top: 275, left: 131 }, { top: 275, left: 186 },
+    { top: 275, left: 240 }, { top: 275, left: 283 }, { top: 275, left: 326 },
+    { top: 275, left: 380 }, { top: 275, left: 433 }, { top: 275, left: 487 },
+    // Fila 2
+    { top: 325, left: 78 }, { top: 325, left: 131 }, { top: 325, left: 186 },
+    { top: 325, left: 240 }, { top: 325, left: 283 }, { top: 325, left: 326 },
+    { top: 325, left: 380 }, { top: 325, left: 433 }, { top: 325, left: 487 },
+    // Fila 3
+    { top: 377, left: 78 }, { top: 377, left: 131 }, { top: 377, left: 186 },
+    { top: 377, left: 380 }, { top: 377, left: 433 }, { top: 377, left: 487 },
+    // Fila 4
+    { top: 427, left: 78 }, { top: 427, left: 131 }, { top: 427, left: 186 },
+    { top: 427, left: 380 }, { top: 427, left: 433 }, { top: 427, left: 487 }
+  ],
+  house: [
+    // Fila 1
+    { top: 153, left: 85 }, { top: 153, left: 135 }, { top: 153, left: 183 },
+    { top: 153, left: 230 }, { top: 153, left: 275 },
+    // Fila 2
+    { top: 210, left: 85 }, { top: 210, left: 135 }, { top: 210, left: 183 },
+    { top: 210, left: 230 }, { top: 210, left: 275 },
+    // Fila 3
+    { top: 270, left: 85 }, { top: 270, left: 135 },
+    { top: 270, left: 230 }, { top: 270, left: 275 }
+  ]
+};
+
+// Inicializar la aplicación
 document.addEventListener('DOMContentLoaded', function() {
-  // Ajustar escala inicial
-  adjustScale();
-  
-  // Asegurar que todos los dropzones mantengan su aspecto
-  const allDropzones = document.querySelectorAll('.dropzone');
-  
-  allDropzones.forEach(dropzone => {
-    // Establecer tamaño fijo según el edificio
-    if(dropzone.parentElement.id === 'school') {
-      dropzone.style.width = '30px';
-      dropzone.style.height = '30px';
-    } else {
-      dropzone.style.width = '35px';
-      dropzone.style.height = '35px';
-    }
-    
-    // Añadir transform para centrado preciso
-    dropzone.style.transform = 'translate(-50%, -50%)';
+  initializeDropzones();
+  createStudentPhotos();
+  setupEventListeners();
+});
+
+function initializeDropzones() {
+  const school = document.getElementById('school');
+  const house = document.getElementById('house');
+
+  // Crear dropzones para la escuela
+  dropzonePositions.school.forEach(pos => {
+    const dropzone = createDropzone(pos, 'school');
+    school.appendChild(dropzone);
   });
+
+  // Crear dropzones para la casa
+  dropzonePositions.house.forEach(pos => {
+    const dropzone = createDropzone(pos, 'house');
+    house.appendChild(dropzone);
+  });
+}
+
+function createDropzone(position, building) {
+  const dropzone = document.createElement('div');
+  dropzone.className = 'dropzone';
+  dropzone.style.top = `${position.top}px`;
+  dropzone.style.left = `${position.left}px`;
+  dropzone.setAttribute('data-building', building);
   
-  // Crear fotos de estudiantes
+  dropzone.addEventListener('dragover', allowDrop);
+  dropzone.addEventListener('drop', drop);
+  dropzone.addEventListener('dragenter', dragEnter);
+  dropzone.addEventListener('dragleave', dragLeave);
+  
+  return dropzone;
+}
+
+function createStudentPhotos() {
   const studentsPanel = document.getElementById('studentsPanel');
   
   for (let i = 1; i <= TOTAL_STUDENTS; i++) {
@@ -37,28 +85,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     studentsPanel.appendChild(img);
   }
-  
-  // Botones de reinicio
+}
+
+function setupEventListeners() {
   document.getElementById('resetSchool').addEventListener('click', () => resetBuilding('school'));
   document.getElementById('resetHouse').addEventListener('click', () => resetBuilding('house'));
-  
-  // Ajustar posiciones iniciales
-  updateDropzonePositions();
-});
-
-function adjustScale() {
-    const school = document.getElementById('school');
-    const house = document.getElementById('house');
-    const windowWidth = window.innerWidth;
-    
-    // Factor de escala basado en ancho de ventana
-    const scale = Math.min(1, windowWidth / 1000);
-    
-    school.style.transform = `scale(${scale})`;
-    house.style.transform = `scale(${scale})`;
-    
-    // Actualizar posiciones después de escalar
-    updateDropzonePositions();
 }
 
 // Funciones de drag and drop
@@ -86,11 +117,7 @@ function drop(ev) {
   
   const data = ev.dataTransfer.getData("text/plain");
   const draggedElement = document.getElementById(data);
-
-   // Asegurar que el elemento sea visible y bien posicionado
-  draggedElement.style.width = '100%';
-  draggedElement.style.height = '100%';
-  draggedElement.style.position = 'static';
+  const studentsPanel = document.getElementById('studentsPanel');
   
   // Si la zona ya tiene un estudiante, lo devolvemos al panel
   const existingStudent = ev.target.querySelector('.draggable');
@@ -134,54 +161,21 @@ function updateCounter() {
   document.getElementById('totalCounter').textContent = placedStudents;
 }
 
-// Actualizar posiciones de los dropzones al cambiar el tamaño de la pantalla
-function updateDropzonePositions() {
-  const school = document.getElementById('school');
-  const house = document.getElementById('house');
+// Ajustar para dispositivos móviles
+function handleResize() {
+  const buildings = document.querySelectorAll('.building');
+  const windowWidth = window.innerWidth;
   
-  // Escala las posiciones basadas en el tamaño actual
-  const schoolWidth = school.offsetWidth;
-  const schoolHeight = school.offsetHeight;
-  const houseWidth = house.offsetWidth;
-  const houseHeight = house.offsetHeight;
-  
-  // Las posiciones ya están en porcentajes en el HTML, no necesitamos recalcular
+  if (windowWidth < 768) {
+    buildings.forEach(building => {
+      building.style.transform = 'scale(0.9)';
+    });
+  } else {
+    buildings.forEach(building => {
+      building.style.transform = 'scale(1)';
+    });
+  }
 }
 
-function adjustImages() {
-  // Para la escuela
-  document.querySelectorAll('#school .dropzone .draggable').forEach(img => {
-    img.style.objectFit = 'cover';
-  });
-  
-  // Para la casa
-  document.querySelectorAll('#house .dropzone .draggable').forEach(img => {
-    img.style.objectFit = 'cover';
-  });
-}
-
-function handleImageSizing() {
-  // Restaurar tamaño original al devolver al panel
-  document.querySelectorAll('.students-panel .draggable').forEach(img => {
-    img.style.width = '';
-    img.style.height = '';
-  });
-  
-  // Asegurar tamaño correcto en dropzones
-  document.querySelectorAll('.dropzone .draggable').forEach(img => {
-    img.style.width = '100%';
-    img.style.height = '100%';
-  });
-}
-
-// Event listeners combinados
-window.addEventListener('load', function() {
-  adjustImages();
-  adjustScale();
-});
-
-window.addEventListener('resize', function() {
-  adjustScale();
-  updateDropzonePositions();
-  adjustImages();
-});
+window.addEventListener('resize', handleResize);
+handleResize(); // Ejecutar al cargar
