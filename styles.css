@@ -1,76 +1,72 @@
-/* Estilos base */
+:root {
+  --primary-color: #3498db;
+  --primary-dark: #2980b9;
+  --success-color: #2ecc71;
+  --text-color: #2c3e50;
+  --bg-color: #f5f7fa;
+  --white: #ffffff;
+  --shadow-sm: 0 2px 5px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+  --shadow-lg: 0 6px 20px rgba(0,0,0,0.15);
+  --border-radius: 12px;
+  --transition: all 0.3s ease;
+}
+
 body {
   font-family: 'Arial', sans-serif;
   text-align: center;
   margin: 0;
   padding: 20px;
-  background-color: #f5f7fa;
+  background-color: var(--bg-color);
 }
 
 h2 {
-  color: #2c3e50;
+  color: var(--text-color);
   margin-bottom: 25px;
-  font-size: 1.75rem;
+  font-size: clamp(24px, 5vw, 28px);
 }
 
-/* Contenedores */
 .buildings-container {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   gap: 30px;
   margin: 0 auto;
-  padding-bottom: 20px;
+  max-width: 1300px;
   flex-wrap: wrap;
-  max-width: 1200px;
+  padding-bottom: 20px;
 }
 
-/* Edificios */
 .building {
   position: relative;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
   overflow: hidden;
   margin-bottom: 20px;
-  background-size: contain;
+  background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
 #school {
   width: 600px;
   height: 550px;
-  background: url('school.png') no-repeat center center;
-  background-size: cover;
+  background-image: url('school.png');
 }
 
 #house {
   width: 400px;
   height: 400px;
-  background: url('casa.png') no-repeat center center;
-  background-size: cover;
+  background-image: url('casa.png');
 }
 
-/* Títulos de edificios */
-.building-title {
-  position: absolute;
-  top: 20px;
-  left: 0;
-  right: 0;
-  color: white;
-  font-weight: bold;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-  font-size: 1.5rem;
-  z-index: 2;
-}
-
-/* Casillas (Dropzones) */
 .dropzone {
   position: absolute;
   width: 30px;
   height: 30px;
   background-color: transparent;
   border: 3px dashed transparent;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -85,60 +81,49 @@ h2 {
 
 .dropzone:hover {
   background-color: rgba(52, 152, 219, 0.4);
-  border-color: #fff;
+  border-color: var(--white);
 }
 
 .dropzone.highlight {
   background-color: rgba(46, 204, 113, 0.4);
-  border-color: #2ecc71;
+  border-color: var(--success-color);
   transform: translate(-50%, -50%) scale(1.1);
 }
 
-
-/* Imágenes de estudiantes */
 .draggable {
   width: 60px;
   height: 60px;
   object-fit: cover;
-  border-radius: 0; /* Elimina bordes redondeados */
-  cursor: grab;
-  transition: transform 0.2s ease;
-  /* Elimina cualquier efecto de sombra o borde */
-  box-shadow: none;
   border: none;
-  outline: none;
+  box-shadow: var(--shadow-md);
+  cursor: grab;
+  transition: transform 0.2s, opacity 0.2s;
 }
 
-.dropzone .draggable {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 0 !important;
-  position: relative;
-  z-index: 3;
+#house .dropzone .draggable {
+  width: 40px;
+  height: 40px;
 }
 
 .draggable.dragging {
   opacity: 0.8;
   transform: scale(0.9);
+  cursor: grabbing;
 }
 
-
-/* Panel de estudiantes */
 .students-panel {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
+  gap: 25px;
   margin: 20px auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 12px;
-  max-width: 800px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 30px;
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  max-width: 1100px;
+  box-shadow: var(--shadow-sm);
 }
 
-/* Controles */
 .controls {
   margin: 30px 0;
   display: flex;
@@ -149,64 +134,82 @@ h2 {
 }
 
 button {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--white);
   border: none;
   padding: 12px 24px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.3s;
+  font-size: 16px;
+  transition: var(--transition);
   font-weight: 600;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 button:hover {
-  background-color: #2980b9;
+  background-color: var(--primary-dark);
   transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-md);
 }
 
 .counter {
   margin-top: 0;
-  font-size: 1.125rem;
-  color: #2c3e50;
+  font-size: 18px;
+  color: var(--text-color);
   font-weight: bold;
   background-color: rgba(255,255,255,0.8);
   padding: 10px 20px;
   border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Responsive para móviles */
+.building-title {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  color: var(--white);
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  font-size: clamp(18px, 4vw, 24px);
+  z-index: 2;
+}
+
+.dropzone .draggable {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
 @media (max-width: 768px) {
-  .building {
-    transform: scale(0.85);
-    margin-bottom: 15px;
+  .buildings-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  #school, #house {
+    width: 100%;
+    max-width: 400px;
+    height: 400px;
   }
   
   .draggable {
-    width: 25px !important;
-    height: 25px !important;
+    width: 50px;
+    height: 50px;
+  }
+  
+  #house .dropzone .draggable {
+    width: 35px;
+    height: 35px;
   }
   
   .students-panel {
-    gap: 3vw;
-    padding: 4vw;
+    gap: 15px;
+    padding: 20px;
   }
   
   .controls {
     flex-direction: column;
-    gap: 3vw;
-  }
-  
-  .dropzone {
-    width: 25px !important; /* Tamaño ligeramente menor para móviles */
-    height: 25px !important;
-  }
-  
-  #house .dropzone {
-    width: 30px !important;
-    height: 30px !important;
+    gap: 15px;
   }
 }
