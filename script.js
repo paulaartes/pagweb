@@ -4,12 +4,21 @@ let placedStudents = 0;
 
 // Inicializar la aplicación cuando el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
-  // Inicializar dropzones
-  document.querySelectorAll('.dropzone').forEach(zone => {
-    zone.addEventListener('dragover', allowDrop);
-    zone.addEventListener('drop', drop);
-    zone.addEventListener('dragenter', dragEnter);
-    zone.addEventListener('dragleave', dragLeave);
+  // Asegurar que todos los dropzones mantengan su aspecto
+  const allDropzones = document.querySelectorAll('.dropzone');
+  
+  allDropzones.forEach(dropzone => {
+    // Establecer tamaño fijo según el edificio
+    if(dropzone.parentElement.id === 'school') {
+      dropzone.style.width = '30px';
+      dropzone.style.height = '30px';
+    } else {
+      dropzone.style.width = '35px';
+      dropzone.style.height = '35px';
+    }
+    
+    // Añadir transform para centrado preciso
+    dropzone.style.transform = 'translate(-50%, -50%)';
   });
   
   // Crear fotos de estudiantes
