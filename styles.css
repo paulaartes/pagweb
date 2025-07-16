@@ -64,8 +64,8 @@ h2 {
 /* Casillas (Dropzones) */
 .dropzone {
   position: absolute;
-  width: 5%;
-  height: 5%;
+  width: 30px;
+  height: 30px;
   background-color: transparent;
   border: 3px dashed transparent;
   transition: all 0.3s ease;
@@ -77,8 +77,8 @@ h2 {
 }
 
 #house .dropzone {
-  width: 6%;
-  height: 6%;
+  width: 35px;
+  height: 35px;
 }
 
 .dropzone:hover {
@@ -175,10 +175,8 @@ button:hover {
   }
   
   .draggable {
-    width: 8vw;
-    height: 8vw;
-    min-width: 40px;
-    min-height: 40px;
+    width: 25px !important;
+    height: 25px !important;
   }
   
   .students-panel {
@@ -191,14 +189,13 @@ button:hover {
     gap: 3vw;
   }
   
-  /* Añade esto para los dropzones */
   .dropzone {
-    width: 7% !important;
-    height: 7% !important;
+    width: 25px !important; /* Tamaño ligeramente menor para móviles */
+    height: 25px !important;
   }
   
   #house .dropzone {
-    width: 8% !important;
-    height: 8% !important;
+    width: 30px !important;
+    height: 30px !important;
   }
 }
