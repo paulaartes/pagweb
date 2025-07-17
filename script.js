@@ -147,10 +147,22 @@ function resetBuilding(building) {
 // Responsive: Ajustar tamaño de edificios
 function handleResize() {
   const buildings = document.querySelectorAll('.building');
-  const scale = window.innerWidth < 768 ? 0.9 : 1;
+  const isTouchScreen = 'ontouchstart' in window;
+  const screenWidth = window.innerWidth;
+  
+  // Ajustes para diferentes dispositivos
+  let scale;
+  if (isTouchScreen) {
+    // Prioriza legibilidad en pantallas táctiles
+    scale = screenWidth < 1024 ? 0.85 : 1;
+  } else {
+    // Escritorios convencionales
+    scale = screenWidth < 768 ? 0.9 : 1;
+  }
+
   buildings.forEach(building => {
     building.style.transform = `scale(${scale})`;
-    building.style.transformOrigin = 'top center'; // Punto de origen del escalado
+    building.style.transformOrigin = 'top center';
   });
 }
 
