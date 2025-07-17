@@ -24,6 +24,7 @@ function createStudentPhotos() {
     const studentContainer = document.createElement('div');
     studentContainer.className = 'student-container';
     studentContainer.dataset.studentId = student.id;
+    studentContainer.tabIndex = 0; 
 
     const img = document.createElement('img');
     img.src = `img/${student.photo}`;
