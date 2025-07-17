@@ -1,7 +1,7 @@
 // Datos de estudiantes (ejemplo - modifica con tus datos reales)
 const studentsData = [
-  { id: 1, name: 'Juan Pérez', photo: 'juan-perez.jpg' },
-  { id: 2, name: 'María García', photo: 'maria-garcia.png' },
+  { id: 1, name: 'Youssef', photo: 'Youssef.png' },
+  { id: 2, name: 'Reda', photo: 'Reda.png' },
   // Agrega los demás 23 estudiantes aquí...
 ];
 
