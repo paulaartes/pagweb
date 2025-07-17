@@ -2,37 +2,6 @@
 const TOTAL_STUDENTS = 25;
 let placedStudents = 0;
 
-// Posiciones de los dropzones
-const dropzonePositions = {
-  school: [
-    // Fila 1
-    { top: 275, left: 78 }, { top: 275, left: 131 }, { top: 275, left: 186 },
-    { top: 275, left: 240 }, { top: 275, left: 283 }, { top: 275, left: 326 },
-    { top: 275, left: 380 }, { top: 275, left: 433 }, { top: 275, left: 487 },
-    // Fila 2
-    { top: 325, left: 78 }, { top: 325, left: 131 }, { top: 325, left: 186 },
-    { top: 325, left: 240 }, { top: 325, left: 283 }, { top: 325, left: 326 },
-    { top: 325, left: 380 }, { top: 325, left: 433 }, { top: 325, left: 487 },
-    // Fila 3
-    { top: 377, left: 78 }, { top: 377, left: 131 }, { top: 377, left: 186 },
-    { top: 377, left: 380 }, { top: 377, left: 433 }, { top: 377, left: 487 },
-    // Fila 4
-    { top: 427, left: 78 }, { top: 427, left: 131 }, { top: 427, left: 186 },
-    { top: 427, left: 380 }, { top: 427, left: 433 }, { top: 427, left: 487 }
-  ],
-  house: [
-    // Fila 1
-    { top: 153, left: 85 }, { top: 153, left: 135 }, { top: 153, left: 183 },
-    { top: 153, left: 230 }, { top: 153, left: 275 },
-    // Fila 2
-    { top: 210, left: 85 }, { top: 210, left: 135 }, { top: 210, left: 183 },
-    { top: 210, left: 230 }, { top: 210, left: 275 },
-    // Fila 3
-    { top: 270, left: 85 }, { top: 270, left: 135 },
-    { top: 270, left: 230 }, { top: 270, left: 275 }
-  ]
-};
-
 // Inicializar la aplicación
 document.addEventListener('DOMContentLoaded', function() {
   initializeDropzones();
