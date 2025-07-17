@@ -15,43 +15,33 @@ document.addEventListener('DOMContentLoaded', function() {
   handleResize();
 });
 
-// Crea los elementos de estudiantes
 function createStudentPhotos() {
   const studentsPanel = document.getElementById('studentsPanel');
   studentsPanel.innerHTML = '';
 
   studentsData.forEach(student => {
-    const studentElement = document.createElement('div');
-    studentElement.className = 'student-container';
-    studentElement.dataset.studentId = student.id;
-    studentElement.draggable = true;
-    studentElement.tabIndex = 0;
+    const imgContainer = document.createElement('div');
+    imgContainer.className = 'student-img-container';
+    imgContainer.draggable = true;
+    imgContainer.dataset.studentId = student.id;
 
     const img = document.createElement('img');
-    img.src = `img/${student.photo}`;
+    img.src = `img/${student.photo}`; // Usa el nombre personalizado
     img.alt = student.name;
     img.className = 'student-img';
 
-    const nameLabel = document.createElement('span');
-    nameLabel.className = 'student-name';
-    nameLabel.textContent = student.name;
+    imgContainer.appendChild(img);
+    studentsPanel.appendChild(imgContainer);
 
-    studentElement.appendChild(img);
-    studentElement.appendChild(nameLabel);
-    studentsPanel.appendChild(studentElement);
-
-    // Eventos de drag
-    studentElement.addEventListener('dragstart', dragStart);
+    imgContainer.addEventListener('dragstart', dragStart);
   });
 }
 
-// Configura eventos
+// Configurar eventos (igual que antes)
 function setupEventListeners() {
-  // Botones de reinicio
   document.getElementById('resetSchool').addEventListener('click', () => resetBuilding('school'));
   document.getElementById('resetHouse').addEventListener('click', () => resetBuilding('house'));
 
-  // Dropzones existentes en HTML
   document.querySelectorAll('.dropzone').forEach(zone => {
     zone.addEventListener('dragover', allowDrop);
     zone.addEventListener('drop', drop);
@@ -60,15 +50,13 @@ function setupEventListeners() {
   });
 }
 
-// Funciones de Drag & Drop
-function allowDrop(ev) {
-  ev.preventDefault();
-}
+// Funciones de Drag & Drop (igual que antes)
+function allowDrop(ev) { ev.preventDefault(); }
 
 function dragStart(ev) {
-  const studentElement = ev.currentTarget;
-  ev.dataTransfer.setData('text/plain', studentElement.dataset.studentId);
-  studentElement.classList.add('dragging');
+  const studentId = ev.currentTarget.dataset.studentId;
+  ev.dataTransfer.setData('text/plain', studentId);
+  ev.currentTarget.classList.add('dragging');
 }
 
 function dragEnter(ev) {
@@ -91,29 +79,34 @@ function drop(ev) {
   const studentElement = document.querySelector(`[data-student-id="${studentId}"]`);
   const studentsPanel = document.getElementById('studentsPanel');
 
-  // Si la zona ya tiene un estudiante
-  const existingStudent = ev.target.querySelector('.student-container');
-  if (existingStudent) {
-    studentsPanel.appendChild(existingStudent);
-    placedStudents--;
-  }
+  // Devolver estudiante existente al panel
+  const existingStudent = ev.target.querySelector('.student-img-container');
+  if (existingStudent) resetElementToPanel(existingStudent);
 
-  // Mover el estudiante
-  ev.target.appendChild(studentElement);
+  // Clonar y ajustar tamaño
+  const clonedElement = studentElement.cloneNode(true);
+  clonedElement.classList.remove('dragging');
+  const img = clonedElement.querySelector('img');
+  img.className = 'dropped-img';
+  img.style.width = `${ev.target.offsetWidth}px`;
+  
+  ev.target.innerHTML = '';
+  ev.target.appendChild(clonedElement);
+  
   placedStudents++;
   updateCounter();
 }
 
-// Reinicia estudiantes de un edificio
+// Funciones auxiliares (igual que antes)
 function resetBuilding(building) {
   const studentsPanel = document.getElementById('studentsPanel');
   const dropzones = document.querySelectorAll(`.dropzone[data-building="${building}"]`);
   let studentsRemoved = 0;
 
   dropzones.forEach(zone => {
-    const student = zone.querySelector('.student-container');
+    const student = zone.querySelector('.student-img-container');
     if (student) {
-      studentsPanel.appendChild(student);
+      resetElementToPanel(student);
       studentsRemoved++;
     }
   });
@@ -122,16 +115,21 @@ function resetBuilding(building) {
   updateCounter();
 }
 
-// Actualiza el contador
+function resetElementToPanel(element) {
+  const studentsPanel = document.getElementById('studentsPanel');
+  const img = element.querySelector('img');
+  img.className = 'student-img';
+  img.style.width = '';
+  studentsPanel.appendChild(element);
+}
+
 function updateCounter() {
   document.getElementById('totalCounter').textContent = placedStudents;
 }
 
-// Responsive
 function handleResize() {
   const buildings = document.querySelectorAll('.building');
   const scale = window.innerWidth < 768 ? 0.9 : 1;
-  
   buildings.forEach(building => {
     building.style.transform = `scale(${scale})`;
   });
