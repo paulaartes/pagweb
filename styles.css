@@ -187,34 +187,77 @@ button:hover {
 }
 
 @media (max-width: 768px) {
+  /* Contenedor principal */
   .buildings-container {
     flex-direction: column;
     align-items: center;
+    gap: 20px; /* Reduce el espacio vertical */
   }
-  
+
+  /* Edificios */
   #school, #house {
-    width: 100%;
-    max-width: 400px;
-    height: 400px;
+    width: 95vw; /* Ocupa casi todo el ancho */
+    max-width: 450px; /* Límite máximo */
+    height: auto; /* Altura flexible */
+    aspect-ratio: 1/1; /* Mantiene proporción cuadrada */
+    margin-bottom: 0; /* Elimina margen inferior extra */
   }
-  
-  .draggable {
+
+  /* Imágenes arrastrables en PANEL (no en dropzones) */
+  #studentsPanel .draggable {
     width: 50px;
     height: 50px;
   }
-  
-  #house .dropzone .draggable {
-    width: 35px;
-    height: 35px;
+
+  /* Dropzones específicas (casa) */
+  #house .dropzone {
+    padding: 8px; /* Espacio interno para mejor tacto */
   }
-  
+
+  /* Panel de estudiantes */
   .students-panel {
-    gap: 15px;
-    padding: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); /* Más compacto */
+    gap: 12px;
+    padding: 15px;
   }
-  
+
+  /* Controles */
   .controls {
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
+    margin-bottom: 15px;
   }
 }
+
+/* Base para pantallas táctiles */
+@media (hover: none) and (pointer: coarse) {
+  .student-img-container {
+    min-width: 80px !important; /* Tamaño mínimo para dedos */
+    padding: 8px;
+  }
+  
+  .dropzone {
+    border-width: 3px !important; /* Bordes más gruesos para tacto */
+  }
+}
+
+/* Ajustes específicos para pantallas grandes táctiles (ej: tablets interactivas) */
+@media (min-width: 768px) and (hover: none) {
+  .buildings-container {
+    max-width: 90vw !important;
+    gap: 20px !important;
+  }
+  
+  .building {
+    transform: scale(1.1) !important; /* Ligero aumento para mejor interacción */
+  }
+  
+  .student-img {
+    width: 85px !important;
+    height: 85px !important;
+  }
+}
+
+}
+
+
