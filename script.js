@@ -119,7 +119,9 @@ function drop(ev) {
   ev.target.innerHTML = '';
   ev.target.appendChild(studentElement);
   
-  placedStudents++;
+  if (!existingStudent) {
+    placedStudents++; // ← Incrementa solo para nuevos placements
+  }
   updateCounter();
 }
 
