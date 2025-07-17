@@ -35,6 +35,7 @@ h2 {
   max-width: 1300px;
   flex-wrap: wrap;
   padding-bottom: 20px;
+  overflow: hidden;
 }
 
 .building {
@@ -46,6 +47,10 @@ h2 {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  transition: transform 0.3s ease; /* Transición suave para el escalado */
+  transform-origin: top center; /* Punto de origen del escalado */
+  width: auto; /* Asegura que el ancho no sea fijo */
+  height: auto;
 }
 
 #school {
