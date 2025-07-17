@@ -35,9 +35,10 @@ let placedStudents = 0;
 document.addEventListener('DOMContentLoaded', function() {
   createStudentPhotos();
   setupEventListeners();
-  handleResize();
+  handleResize(); // Inicializar el responsive al cargar
 });
 
+// Crear panel de estudiantes
 function createStudentPhotos() {
   const studentsPanel = document.getElementById('studentsPanel');
   studentsPanel.innerHTML = '';
@@ -49,7 +50,7 @@ function createStudentPhotos() {
     imgContainer.dataset.studentId = student.id;
 
     const img = document.createElement('img');
-    img.src = `img/${student.photo}`; // Usa el nombre personalizado
+    img.src = `img/${student.photo}`;
     img.alt = student.name;
     img.className = 'student-img';
 
@@ -60,26 +61,28 @@ function createStudentPhotos() {
   });
 }
 
-// Configurar eventos (igual que antes)
+// Configurar eventos
 function setupEventListeners() {
-  document.getElementById('resetSchool').addEventListener('click', () => resetBuilding('school'));
-  document.getElementById('resetHouse').addEventListener('click', () => resetBuilding('house'));
-
   document.querySelectorAll('.dropzone').forEach(zone => {
     zone.addEventListener('dragover', allowDrop);
     zone.addEventListener('drop', drop);
     zone.addEventListener('dragenter', dragEnter);
     zone.addEventListener('dragleave', dragLeave);
   });
+
+  document.getElementById('resetSchool').addEventListener('click', () => resetBuilding('school'));
+  document.getElementById('resetHouse').addEventListener('click', () => resetBuilding('house'));
+
+  window.addEventListener('resize', handleResize); // Escuchar cambios de tamaño
 }
 
-// Funciones de Drag & Drop (igual que antes)
-function allowDrop(ev) { ev.preventDefault(); }
+// Funciones de Drag & Drop
+function allowDrop(ev) {
+  ev.preventDefault();
+}
 
 function dragStart(ev) {
-  const studentId = ev.currentTarget.dataset.studentId;
-  ev.dataTransfer.setData('text/plain', studentId);
-  ev.currentTarget.classList.add('dragging');
+  ev.dataTransfer.setData('text/plain', ev.currentTarget.dataset.studentId);
 }
 
 function dragEnter(ev) {
@@ -100,27 +103,27 @@ function drop(ev) {
 
   const studentId = ev.dataTransfer.getData('text/plain');
   const studentElement = document.querySelector(`[data-student-id="${studentId}"]`);
-  const studentsPanel = document.getElementById('studentsPanel');
 
-  // Devolver estudiante existente al panel
+  // Si la zona ya tiene un estudiante, lo devolvemos al panel
   const existingStudent = ev.target.querySelector('.student-img-container');
-  if (existingStudent) resetElementToPanel(existingStudent);
+  if (existingStudent) {
+    document.getElementById('studentsPanel').appendChild(existingStudent);
+    placedStudents--;
+  }
 
-  // Clonar y ajustar tamaño
-  const clonedElement = studentElement.cloneNode(true);
-  clonedElement.classList.remove('dragging');
-  const img = clonedElement.querySelector('img');
+  // Movemos el elemento y ajustamos tamaño
+  const img = studentElement.querySelector('img');
   img.className = 'dropped-img';
   img.style.width = `${ev.target.offsetWidth}px`;
   
   ev.target.innerHTML = '';
-  ev.target.appendChild(clonedElement);
+  ev.target.appendChild(studentElement);
   
   placedStudents++;
   updateCounter();
 }
 
-// Funciones auxiliares (igual que antes)
+// Reiniciar edificio
 function resetBuilding(building) {
   const studentsPanel = document.getElementById('studentsPanel');
   const dropzones = document.querySelectorAll(`.dropzone[data-building="${building}"]`);
@@ -129,7 +132,10 @@ function resetBuilding(building) {
   dropzones.forEach(zone => {
     const student = zone.querySelector('.student-img-container');
     if (student) {
-      resetElementToPanel(student);
+      const img = student.querySelector('img');
+      img.className = 'student-img';
+      img.style.width = '';
+      studentsPanel.appendChild(student);
       studentsRemoved++;
     }
   });
@@ -138,24 +144,17 @@ function resetBuilding(building) {
   updateCounter();
 }
 
-function resetElementToPanel(element) {
-  const studentsPanel = document.getElementById('studentsPanel');
-  const img = element.querySelector('img');
-  img.className = 'student-img';
-  img.style.width = '';
-  studentsPanel.appendChild(element);
-}
-
-function updateCounter() {
-  document.getElementById('totalCounter').textContent = placedStudents;
-}
-
+// Responsive: Ajustar tamaño de edificios
 function handleResize() {
   const buildings = document.querySelectorAll('.building');
   const scale = window.innerWidth < 768 ? 0.9 : 1;
   buildings.forEach(building => {
     building.style.transform = `scale(${scale})`;
+    building.style.transformOrigin = 'top center'; // Punto de origen del escalado
   });
 }
 
-window.addEventListener('resize', handleResize);
+// Actualizar contador
+function updateCounter() {
+  document.getElementById('totalCounter').textContent = placedStudents;
+}
