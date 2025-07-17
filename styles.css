@@ -62,8 +62,8 @@ h2 {
 
 .dropzone {
   position: absolute;
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   background-color: transparent;
   border: 3px dashed transparent;
   transition: var(--transition);
