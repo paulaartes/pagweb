@@ -238,7 +238,7 @@ function collectAttendanceData() {
   
   // Los que no están en ningún lugar se consideran ausentes
   studentsData.forEach(student => {
-    if (!presentStudents.includes(student.name) {
+    if (!presentStudents.includes(student.name)) {
       absentStudents.push(student.name);
     }
   });
