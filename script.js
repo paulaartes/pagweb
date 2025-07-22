@@ -255,9 +255,9 @@ function collectAttendanceData() {
 // Preparar datos para Notion (ajusta según tu base de datos)
 function prepareNotionData(attendanceData) {
   return {
-    parent: { database_id: "237069f42b1480a99bb6ff24555bb342" }, // Reemplaza con tu ID de DB
+    parent: { database_id: "237069f42b1480a99bb6ff24555bb342" },
     properties: {
-      "Fecha": {
+      "Fecha 1": {
         date: {
           start: attendanceData.date
         }
@@ -280,12 +280,6 @@ function prepareNotionData(attendanceData) {
           }
         ]
       },
-      "Total Presentes": {
-        number: attendanceData.totalPresent
-      },
-      "Total Ausentes": {
-        number: attendanceData.totalAbsent
-      },
       "Nombre": {
         title: [
           {
@@ -294,10 +288,11 @@ function prepareNotionData(attendanceData) {
             }
           }
         ]
-      }
+      },
     }
   };
 }
+
 
 // Enviar datos a la API de Notion
 async function sendToNotionAPI(data) {
