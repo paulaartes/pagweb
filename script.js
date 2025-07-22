@@ -296,19 +296,21 @@ function prepareNotionData(attendanceData) {
 
 // Enviar datos a la API de Notion
 async function sendToNotionAPI(data) {
-  // IMPORTANTE: Reemplaza estos valores con tus credenciales reales
-  const NOTION_API_KEY = 'ntn_k1777609492509ovQMDXl1KmWJmnfMrCkSSbiakI5I81rN'; // Tu API key de Notion
-  const NOTION_VERSION = '2022-06-28';
+  // Usa la URL de tu backend en Render (ej: https://tunombre.onrender.com)
+  const backendUrl = 'https://pagweb-whih.onrender.com';
   
-  return fetch('https://api.notion.com/v1/pages', {
+  const response = await fetch(backendUrl, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${NOTION_API_KEY}`,
-      'Content-Type': 'application/json',
-      'Notion-Version': NOTION_VERSION
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(data)
   });
+  
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${await response.text()}`);
+  }
+  return response;
 }
 
 // Actualizar contador
