@@ -296,7 +296,7 @@ function prepareNotionData(attendanceData) {
 
 // Enviar datos a la API de Notion
 async function sendToNotionAPI(data) {
-  return fetch('https://notion-asistencia.onrender.com/guardar-asistencia', {
+  return fetch('https://pagweb-whih.onrender.com/save-attendance', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
