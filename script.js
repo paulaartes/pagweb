@@ -296,21 +296,13 @@ function prepareNotionData(attendanceData) {
 
 // Enviar datos a la API de Notion
 async function sendToNotionAPI(data) {
-  // Usa la URL de tu backend en Render (ej: https://tunombre.onrender.com)
-  const backendUrl = 'https://pagweb-whih.onrender.com';
-  
-  const response = await fetch(backendUrl, {
+  return fetch('https://notion-asistencia.onrender.com/guardar-asistencia', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(data)
   });
-  
-  if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${await response.text()}`);
-  }
-  return response;
 }
 
 // Actualizar contador
