@@ -25,7 +25,6 @@ const studentsData = [
   { id: 23, name: 'Barkwende', photo: 'Barkwende.png' },
   { id: 24, name: 'Lola', photo: 'Lola.png' },
   { id: 25, name: 'Yassin', photo: 'Yassin.png' },
-  
 ];
 
 // Variables globales
@@ -72,8 +71,9 @@ function setupEventListeners() {
 
   document.getElementById('resetSchool').addEventListener('click', () => resetBuilding('school'));
   document.getElementById('resetHouse').addEventListener('click', () => resetBuilding('house'));
+  document.getElementById('Guardar').addEventListener('click', Guardar);
 
-  window.addEventListener('resize', handleResize); // Escuchar cambios de tamaño
+  window.addEventListener('resize', handleResize);
 }
 
 // Funciones de Drag & Drop
@@ -120,7 +120,7 @@ function drop(ev) {
   ev.target.appendChild(studentElement);
   
   if (!existingStudent) {
-    placedStudents++; // ← Incrementa solo para nuevos placements
+    placedStudents++;
   }
   updateCounter();
 }
@@ -155,16 +155,164 @@ function handleResize() {
   // Ajustes para diferentes dispositivos
   let scale;
   if (isTouchScreen) {
-    // Prioriza legibilidad en pantallas táctiles
     scale = screenWidth < 1024 ? 0.85 : 1;
   } else {
-    // Escritorios convencionales
     scale = screenWidth < 768 ? 0.9 : 1;
   }
 
   buildings.forEach(building => {
     building.style.transform = `scale(${scale})`;
     building.style.transformOrigin = 'top center';
+  });
+}
+
+// Actualizar contador
+function updateCounter() {
+  document.getElementById('totalCounter').textContent = placedStudents;
+}
+
+// ===== Funciones para Notion ===== //
+
+// Guardar datos en Notion
+async function Guardar() {
+  try {
+    // Mostrar mensaje de carga
+    const saveButton = document.getElementById('Guardar');
+    saveButton.disabled = true;
+    saveButton.textContent = 'Guardando...';
+    
+    // 1. Recopilar datos de asistencia
+    const attendanceData = collectAttendanceData();
+    
+    // 2. Preparar datos para Notion
+    const notionData = prepareNotionData(attendanceData);
+    
+    // 3. Enviar a Notion
+    const response = await sendToNotionAPI(notionData);
+    
+    // 4. Mostrar feedback al usuario
+    if (response.ok) {
+      alert('✅ Asistencia guardada correctamente en Notion!');
+    } else {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Error al guardar en Notion');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('❌ Error al guardar en Notion: ' + error.message);
+  } finally {
+    // Restaurar el botón
+    const saveButton = document.getElementById('Guardar');
+    saveButton.disabled = false;
+    saveButton.textContent = 'Salvar en Notion';
+  }
+}
+
+// Recopilar datos de asistencia
+function collectAttendanceData() {
+  const presentStudents = [];
+  const absentStudents = [];
+  const currentDate = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  
+  // Obtener estudiantes en la escuela (presentes)
+  const schoolZones = document.querySelectorAll('.dropzone[data-building="school"]');
+  schoolZones.forEach(zone => {
+    const studentElement = zone.querySelector('.student-img-container');
+    if (studentElement) {
+      const studentId = studentElement.dataset.studentId;
+      const student = studentsData.find(s => s.id == studentId);
+      if (student) presentStudents.push(student.name);
+    }
+  });
+  
+  // Obtener estudiantes en casa (ausentes)
+  const houseZones = document.querySelectorAll('.dropzone[data-building="house"]');
+  houseZones.forEach(zone => {
+    const studentElement = zone.querySelector('.student-img-container');
+    if (studentElement) {
+      const studentId = studentElement.dataset.studentId;
+      const student = studentsData.find(s => s.id == studentId);
+      if (student) absentStudents.push(student.name);
+    }
+  });
+  
+  // Los que no están en ningún lugar se consideran ausentes
+  studentsData.forEach(student => {
+    if (!presentStudents.includes(student.name) {
+      absentStudents.push(student.name);
+    }
+  });
+  
+  return {
+    date: currentDate,
+    present: presentStudents,
+    absent: absentStudents,
+    totalPresent: presentStudents.length,
+    totalAbsent: absentStudents.length
+  };
+}
+
+// Preparar datos para Notion (ajusta según tu base de datos)
+function prepareNotionData(attendanceData) {
+  return {
+    parent: { database_id: "237069f42b1480a99bb6ff24555bb342" }, // Reemplaza con tu ID de DB
+    properties: {
+      "Fecha": {
+        date: {
+          start: attendanceData.date
+        }
+      },
+      "Estudiantes Presentes": {
+        rich_text: [
+          {
+            text: {
+              content: attendanceData.present.join(', ')
+            }
+          }
+        ]
+      },
+      "Estudiantes Ausentes": {
+        rich_text: [
+          {
+            text: {
+              content: attendanceData.absent.join(', ')
+            }
+          }
+        ]
+      },
+      "Total Presentes": {
+        number: attendanceData.totalPresent
+      },
+      "Total Ausentes": {
+        number: attendanceData.totalAbsent
+      },
+      "Nombre": {
+        title: [
+          {
+            text: {
+              content: `Asistencia ${attendanceData.date}`
+            }
+          }
+        ]
+      }
+    }
+  };
+}
+
+// Enviar datos a la API de Notion
+async function sendToNotionAPI(data) {
+  // IMPORTANTE: Reemplaza estos valores con tus credenciales reales
+  const NOTION_API_KEY = 'ntn_k1777609492509ovQMDXl1KmWJmnfMrCkSSbiakI5I81rN'; // Tu API key de Notion
+  const NOTION_VERSION = '2022-06-28';
+  
+  return fetch('https://api.notion.com/v1/pages', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${NOTION_API_KEY}`,
+      'Content-Type': 'application/json',
+      'Notion-Version': NOTION_VERSION
+    },
+    body: JSON.stringify(data)
   });
 }
 
