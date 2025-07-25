@@ -176,35 +176,36 @@ function updateCounter() {
 // Guardar datos en Notion
 async function Guardar() {
   try {
-    // Mostrar mensaje de carga
-    const saveButton = document.getElementById('Guardar');
-    saveButton.disabled = true;
-    saveButton.textContent = 'Guardando...';
+    const response = await axios.post(
+      "https://pagweb-whih.onrender.com/api/save-attendance",
+      { 
+        // Tus datos aquí (ejemplo):
+        nombre: "Paula Artés",
+        fecha: "2023-10-05",
+        asiste: true
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          // Si necesitas autenticación:
+          // "Authorization": "Bearer token_de_notion"
+        }
+      }
+    );
+
+    console.log("Respuesta del servidor:", response.data);
+    alert("¡Datos guardados en Notion correctamente!");
     
-    // 1. Recopilar datos de asistencia
-    const attendanceData = collectAttendanceData();
-    
-    // 2. Preparar datos para Notion
-    const notionData = prepareNotionData(attendanceData);
-    
-    // 3. Enviar a Notion
-    const response = await sendToNotionAPI(notionData);
-    
-    // 4. Mostrar feedback al usuario
-    if (response.ok) {
-      alert('✅ Asistencia guardada correctamente en Notion!');
-    } else {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Error al guardar en Notion');
-    }
   } catch (error) {
-    console.error('Error:', error);
-    alert('❌ Error al guardar en Notion: ' + error.message);
-  } finally {
-    // Restaurar el botón
-    const saveButton = document.getElementById('Guardar');
-    saveButton.disabled = false;
-    saveButton.textContent = 'Salvar en Notion';
+    console.error("Error detallado:", error);
+    
+    // Mensaje de error personalizado
+    if (error.response) {
+      // Error de la API (ej: 500, 404)
+      alert(`Error ${error.response.status}: ${error.response.data.message || "Fallo al guardar"}`);
+    } else {
+      alert("Error de conexión o servidor no disponible");
+    }
   }
 }
 
