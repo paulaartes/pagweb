@@ -296,13 +296,28 @@ function prepareNotionData(attendanceData) {
 
 // Enviar datos a la API de Notion
 async function sendToNotionAPI(data) {
-  return fetch('https://pagweb-whih.onrender.com/save-attendance', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
+  try {
+    const response = await fetch('https://pagweb-whih.onrender.com/save-attendance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+
+    // Verifica si la respuesta es HTML (error)
+    const text = await response.text();
+    if (text.startsWith('<!DOCTYPE')) {
+      console.error('El servidor devolvió HTML:', text);
+      throw new Error('El servidor no está devolviendo JSON. Revisa la configuración del backend.');
+    }
+
+    // Si es JSON, continúa
+    return JSON.parse(text);
+  } catch (error) {
+    console.error('Error en sendToNotionAPI:', error);
+    throw error;
+  }
 }
 
 // Actualizar contador
