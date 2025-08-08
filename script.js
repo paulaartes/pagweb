@@ -12,7 +12,7 @@ const firebaseConfig = {
 
 // Inicializa Firebase
 firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+const db = firebase.firestore();
 
 // Datos de estudiantes (ejemplo - modifica con tus datos reales)
 const studentsData = [
@@ -208,19 +208,13 @@ function updateCounter() {
 // Guardar datos en Firebase
 async function saveToFirebase() {
   const attendanceData = collectAttendanceData();
+  const today = new Date().toISOString().split('T')[0];
   
   try {
-    // Obtener la fecha actual como clave (formato YYYY-MM-DD)
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Guardar en Firebase
-    await database.ref(`attendance/${today}`).set(attendanceData);
-    
-    showMessage('Asistencia guardada correctamente en Firebase', 'success');
-    console.log('Datos guardados:', attendanceData);
+    await db.collection("attendance").doc(today).set(attendanceData);
+    showMessage('Datos guardados!', 'success');
   } catch (error) {
-    showMessage(`Error al guardar: ${error.message}`, 'error');
-    console.error('Error al guardar:', error);
+    showMessage(`Error: ${error}`, 'error');
   }
 }
 
@@ -330,6 +324,23 @@ function findEmptyDropzone(building) {
   }
   return null;
 }
+
+// Prueba de conexión
+function testConnection() {
+  const testRef = database.ref('connection_test');
+  testRef.set({
+    timestamp: Date.now(),
+    message: "Conexión exitosa"
+  }).then(() => {
+    console.log("Conexión a Firebase funciona correctamente");
+    testRef.remove(); // Limpiamos la prueba
+  }).catch((error) => {
+    console.error("Error de conexión:", error);
+  });
+}
+
+// Llama a la función al cargar
+document.addEventListener('DOMContentLoaded', testConnection);
   
 // Actualizar contador
 function updateCounter() {
