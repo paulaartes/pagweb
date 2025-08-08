@@ -225,37 +225,40 @@ async function saveToFirebase() {
 
 // Recopilar datos de asistencia
 function collectAttendanceData() {
-  const presentStudents = [];
-  const absentStudents = [];
+  const presentStudents = []; // Solo almacenará nombres
+  const absentStudents = [];  // Solo almacenará nombres
   const currentDate = new Date().toISOString().split('T')[0];
   
-  // Recolectar presentes
-  document.querySelectorAll('.dropzone[data-building="school"] .student-img-container').forEach(el => {
-    const student = studentsData.find(s => s.id == el.dataset.studentId);
-    if (student) presentStudents.push(student);
+  // Estudiantes en la escuela (presentes) - solo nombres
+  document.querySelectorAll('.dropzone[data-building="school"] .student-img-container').forEach(studentElement => {
+    const studentId = studentElement.dataset.studentId;
+    const student = studentsData.find(s => s.id == studentId);
+    if (student) presentStudents.push(student.name); // Solo el nombre
   });
   
-  // Recolectar ausentes
-  document.querySelectorAll('.dropzone[data-building="house"] .student-img-container').forEach(el => {
-    const student = studentsData.find(s => s.id == el.dataset.studentId);
-    if (student) absentStudents.push(student);
+  // Estudiantes en casa (ausentes) - solo nombres
+  document.querySelectorAll('.dropzone[data-building="house"] .student-img-container').forEach(studentElement => {
+    const studentId = studentElement.dataset.studentId;
+    const student = studentsData.find(s => s.id == studentId);
+    if (student) absentStudents.push(student.name); // Solo el nombre
   });
   
-  // Estudiantes no colocados (también ausentes)
+  // Estudiantes no colocados (ausentes) - solo nombres
   studentsData.forEach(student => {
-    if (!presentStudents.some(s => s.id === student.id) && 
-        !absentStudents.some(s => s.id === student.id)) {
-      absentStudents.push(student);
+    const isPresent = presentStudents.includes(student.name);
+    const isAbsent = absentStudents.includes(student.name);
+    if (!isPresent && !isAbsent) {
+      absentStudents.push(student.name); // Solo el nombre
     }
   });
   
   return {
     Fecha: currentDate,
-    Presentes: presentStudents,
-    Ausentes: absentStudents,
+    Presentes: presentStudents,  // Array de strings (nombres)
+    Ausentes: absentStudents,    // Array de strings (nombres)
     totalPresentes: presentStudents.length,
     totalAusentes: absentStudents.length,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp() // ¡Cambiado a Firestore!
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
   };
 }
 
