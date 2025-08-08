@@ -211,10 +211,15 @@ async function saveToFirebase() {
   const today = new Date().toISOString().split('T')[0];
   
   try {
+    // Guardar en Firestore (sintaxis correcta)
     await db.collection("attendance").doc(today).set(attendanceData);
-    showMessage('Datos guardados!', 'success');
+    
+    // Mensaje de confirmación
+    showMessage('Asistencia guardada correctamente', 'success');
+    console.log('Datos guardados:', attendanceData);
   } catch (error) {
-    showMessage(`Error: ${error}`, 'error');
+    showMessage(`Error al guardar: ${error.message}`, 'error');
+    console.error('Error al guardar:', error);
   }
 }
 
@@ -224,26 +229,23 @@ function collectAttendanceData() {
   const absentStudents = [];
   const currentDate = new Date().toISOString().split('T')[0];
   
-  // Estudiantes en la escuela (presentes)
-  document.querySelectorAll('.dropzone[data-building="school"] .student-img-container').forEach(studentElement => {
-    const studentId = studentElement.dataset.studentId;
-    const student = studentsData.find(s => s.id == studentId);
-    if (student) presentStudents.push({ id: student.id, name: student.name });
+  // Recolectar presentes
+  document.querySelectorAll('.dropzone[data-building="school"] .student-img-container').forEach(el => {
+    const student = studentsData.find(s => s.id == el.dataset.studentId);
+    if (student) presentStudents.push(student);
   });
   
-  // Estudiantes en casa (ausentes)
-  document.querySelectorAll('.dropzone[data-building="house"] .student-img-container').forEach(studentElement => {
-    const studentId = studentElement.dataset.studentId;
-    const student = studentsData.find(s => s.id == studentId);
-    if (student) absentStudents.push({ id: student.id, name: student.name });
+  // Recolectar ausentes
+  document.querySelectorAll('.dropzone[data-building="house"] .student-img-container').forEach(el => {
+    const student = studentsData.find(s => s.id == el.dataset.studentId);
+    if (student) absentStudents.push(student);
   });
   
-  // Estudiantes no colocados (ausentes)
+  // Estudiantes no colocados (también ausentes)
   studentsData.forEach(student => {
-    const isPresent = presentStudents.some(s => s.id === student.id);
-    const isAbsent = absentStudents.some(s => s.id === student.id);
-    if (!isPresent && !isAbsent) {
-      absentStudents.push({ id: student.id, name: student.name });
+    if (!presentStudents.some(s => s.id === student.id) && 
+        !absentStudents.some(s => s.id === student.id)) {
+      absentStudents.push(student);
     }
   });
   
@@ -253,7 +255,7 @@ function collectAttendanceData() {
     absent: absentStudents,
     totalPresent: presentStudents.length,
     totalAbsent: absentStudents.length,
-    timestamp: firebase.database.ServerValue.TIMESTAMP
+    timestamp: firebase.firestore.FieldValue.serverTimestamp() // ¡Cambiado a Firestore!
   };
 }
 
