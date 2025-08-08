@@ -315,8 +315,10 @@ function findEmptyDropzone(building) {
     }
   }
   return null;
+}
   
 // Actualizar contador
 function updateCounter() {
   document.getElementById('totalCounter').textContent = placedStudents;
 }
+document.getElementById('Guardar').addEventListener('click', saveToFirebase);
