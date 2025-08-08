@@ -56,6 +56,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // Crear panel de estudiantes
 function createStudentPhotos() {
   const studentsPanel = document.getElementById('studentsPanel');
+  if (!studentsPanel) {
+    console.error("ERROR: No se encontró el elemento con ID 'studentsPanel'");
+    return;
+  }
   studentsPanel.innerHTML = '';
 
   studentsData.forEach(student => {
@@ -63,16 +67,27 @@ function createStudentPhotos() {
     imgContainer.className = 'student-img-container';
     imgContainer.draggable = true;
     imgContainer.dataset.studentId = student.id;
+    imgContainer.title = student.name; // Tooltip con el nombre
 
     const img = document.createElement('img');
-    img.src = `img/${student.photo}`;
+    const imagePath = `img/${student.photo}`;
+    img.src = imagePath;
     img.alt = student.name;
     img.className = 'student-img';
+    
+    // Manejo de errores mejorado
+    img.onerror = function() {
+      console.error(`Error al cargar: ${imagePath}`);
+      this.src = 'img/placeholder.png'; // Imagen de respaldo
+      this.alt = `${student.name} (no disponible)`;
+    };
 
     imgContainer.appendChild(img);
     studentsPanel.appendChild(imgContainer);
 
+    // Verifica que el evento se asigna correctamente
     imgContainer.addEventListener('dragstart', dragStart);
+    console.log(`Imagen creada para: ${student.name}`, img); // Depuración
   });
 }
 
