@@ -329,15 +329,22 @@ function findEmptyDropzone(building) {
 
 // Prueba de conexión
 function testConnection() {
-  const testRef = database.ref('connection_test');
+  // Usamos Firestore en lugar de Realtime Database
+  const testRef = db.collection("connection_tests").doc("test");
+  
   testRef.set({
-    timestamp: Date.now(),
+    timestamp: new Date(),
     message: "Conexión exitosa"
   }).then(() => {
-    console.log("Conexión a Firebase funciona correctamente");
-    testRef.remove(); // Limpiamos la prueba
+    console.log("Conexión a Firestore funciona correctamente");
+    
+    // Opcional: Eliminar el documento de prueba (si realmente es necesario)
+    testRef.delete().then(() => {
+      console.log("Documento de prueba eliminado");
+    });
+    
   }).catch((error) => {
-    console.error("Error de conexión:", error);
+    console.error("Error de conexión a Firestore:", error);
   });
 }
 
