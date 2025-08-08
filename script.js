@@ -1,3 +1,19 @@
+
+// Configuración de Firebase 
+const firebaseConfig = {
+  apiKey: "AIzaSyDP8yvq19Z74rARviA8HlTggnIwHEaPLTY",
+  authDomain: "asistencia-alumnos-71d0e.firebaseapp.com",
+  projectId: "asistencia-alumnos-71d0e",
+  storageBucket: "asistencia-alumnos-71d0e.firebasestorage.app",
+  messagingSenderId: "56629959322",
+  appId: "1:56629959322:web:7875a224dd6971ddde1d23",
+  measurementId: "G-7WQ1PD3418"
+};
+
+// Inicializa Firebase
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
 // Datos de estudiantes (ejemplo - modifica con tus datos reales)
 const studentsData = [
   { id: 1, name: 'Youssef', photo: 'Youssef.png' },
@@ -171,41 +187,26 @@ function updateCounter() {
   document.getElementById('totalCounter').textContent = placedStudents;
 }
 
-// ===== Funciones para Notion ===== //
+-----
 
-// Guardar datos en Notion
-async function Guardar() {
+// ===== Funciones para Firebase ===== //
+
+// Guardar datos en Firebase
+async function saveToFirebase() {
+  const attendanceData = collectAttendanceData();
+  
   try {
-    const response = await axios.post(
-      "https://pagweb-whih.onrender.com/api/save-attendance",
-      { 
-        // Tus datos aquí (ejemplo):
-        nombre: "Paula Artés",
-        fecha: "2023-10-05",
-        asiste: true
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          // Si necesitas autenticación:
-          // "Authorization": "Bearer token_de_notion"
-        }
-      }
-    );
-
-    console.log("Respuesta del servidor:", response.data);
-    alert("¡Datos guardados en Notion correctamente!");
+    // Obtener la fecha actual como clave (formato YYYY-MM-DD)
+    const today = new Date().toISOString().split('T')[0];
     
+    // Guardar en Firebase
+    await database.ref(`attendance/${today}`).set(attendanceData);
+    
+    showMessage('Asistencia guardada correctamente en Firebase', 'success');
+    console.log('Datos guardados:', attendanceData);
   } catch (error) {
-    console.error("Error detallado:", error);
-    
-    // Mensaje de error personalizado
-    if (error.response) {
-      // Error de la API (ej: 500, 404)
-      alert(`Error ${error.response.status}: ${error.response.data.message || "Fallo al guardar"}`);
-    } else {
-      alert("Error de conexión o servidor no disponible");
-    }
+    showMessage(`Error al guardar: ${error.message}`, 'error');
+    console.error('Error al guardar:', error);
   }
 }
 
@@ -213,34 +214,28 @@ async function Guardar() {
 function collectAttendanceData() {
   const presentStudents = [];
   const absentStudents = [];
-  const currentDate = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  const currentDate = new Date().toISOString().split('T')[0];
   
-  // Obtener estudiantes en la escuela (presentes)
-  const schoolZones = document.querySelectorAll('.dropzone[data-building="school"]');
-  schoolZones.forEach(zone => {
-    const studentElement = zone.querySelector('.student-img-container');
-    if (studentElement) {
-      const studentId = studentElement.dataset.studentId;
-      const student = studentsData.find(s => s.id == studentId);
-      if (student) presentStudents.push(student.name);
-    }
+  // Estudiantes en la escuela (presentes)
+  document.querySelectorAll('.dropzone[data-building="school"] .student-img-container').forEach(studentElement => {
+    const studentId = studentElement.dataset.studentId;
+    const student = studentsData.find(s => s.id == studentId);
+    if (student) presentStudents.push({ id: student.id, name: student.name });
   });
   
-  // Obtener estudiantes en casa (ausentes)
-  const houseZones = document.querySelectorAll('.dropzone[data-building="house"]');
-  houseZones.forEach(zone => {
-    const studentElement = zone.querySelector('.student-img-container');
-    if (studentElement) {
-      const studentId = studentElement.dataset.studentId;
-      const student = studentsData.find(s => s.id == studentId);
-      if (student) absentStudents.push(student.name);
-    }
+  // Estudiantes en casa (ausentes)
+  document.querySelectorAll('.dropzone[data-building="house"] .student-img-container').forEach(studentElement => {
+    const studentId = studentElement.dataset.studentId;
+    const student = studentsData.find(s => s.id == studentId);
+    if (student) absentStudents.push({ id: student.id, name: student.name });
   });
   
-  // Los que no están en ningún lugar se consideran ausentes
+  // Estudiantes no colocados (ausentes)
   studentsData.forEach(student => {
-    if (!presentStudents.includes(student.name)) {
-      absentStudents.push(student.name);
+    const isPresent = presentStudents.some(s => s.id === student.id);
+    const isAbsent = absentStudents.some(s => s.id === student.id);
+    if (!isPresent && !isAbsent) {
+      absentStudents.push({ id: student.id, name: student.name });
     }
   });
   
@@ -249,63 +244,78 @@ function collectAttendanceData() {
     present: presentStudents,
     absent: absentStudents,
     totalPresent: presentStudents.length,
-    totalAbsent: absentStudents.length
+    totalAbsent: absentStudents.length,
+    timestamp: firebase.database.ServerValue.TIMESTAMP
   };
 }
 
-// Preparar datos para Notion (ajusta según tu base de datos)
-function prepareNotionData(attendanceData) {
-  return {
-    parent: { database_id: "237069f42b1480a99bb6ff24555bb342" },
-    properties: {
-      "Fecha 1": {
-        date: {
-          start: attendanceData.date
-        }
-      },
-      "Estudiantes Presentes": {
-        rich_text: [
-          {
-            text: {
-              content: attendanceData.present.join(', ')
-            }
+// Mostrar mensajes
+function showMessage(text, type) {
+  const messageDiv = document.getElementById('message');
+  messageDiv.textContent = text;
+  messageDiv.style.display = 'block';
+  messageDiv.className = type; // 'success' o 'error'
+  
+  setTimeout(() => {
+    messageDiv.style.display = 'none';
+  }, 3000);
+}
+
+// Cargar asistencia de un día específico (opcional)
+function loadAttendance(date) {
+  database.ref(`attendance/${date}`).once('value')
+    .then((snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        // Limpiar dropzones
+        document.querySelectorAll('.dropzone img').forEach(img => img.remove());
+        
+        // Colocar presentes en la escuela
+        data.present.forEach(student => {
+          const studentElement = document.querySelector(`[data-student-id="${student.id}"]`);
+          const dropzone = findEmptyDropzone('school');
+          if (studentElement && dropzone) {
+            const img = studentElement.querySelector('img');
+            img.className = 'dropped-img';
+            img.style.width = `${dropzone.offsetWidth}px`;
+            dropzone.appendChild(studentElement);
           }
-        ]
-      },
-      "Estudiantes Ausentes": {
-        rich_text: [
-          {
-            text: {
-              content: attendanceData.absent.join(', ')
-            }
+        });
+        
+        // Colocar ausentes en casa
+        data.absent.forEach(student => {
+          const studentElement = document.querySelector(`[data-student-id="${student.id}"]`);
+          const dropzone = findEmptyDropzone('house');
+          if (studentElement && dropzone) {
+            const img = studentElement.querySelector('img');
+            img.className = 'dropped-img';
+            img.style.width = `${dropzone.offsetWidth}px`;
+            dropzone.appendChild(studentElement);
           }
-        ]
-      },
-      "Nombre": {
-        title: [
-          {
-            text: {
-              content: `Asistencia ${attendanceData.date}`
-            }
-          }
-        ]
-      },
+        });
+        
+        placedStudents = data.present.length + data.absent.length;
+        updateCounter();
+        showMessage(`Asistencia del ${date} cargada`, 'success');
+      } else {
+        showMessage(`No hay datos para ${date}`, 'info');
+      }
+    })
+    .catch((error) => {
+      showMessage(`Error al cargar: ${error.message}`, 'error');
+    });
+}
+
+// Función auxiliar para encontrar dropzone vacío
+function findEmptyDropzone(building) {
+  const dropzones = document.querySelectorAll(`#${building} .dropzone`);
+  for (const dropzone of dropzones) {
+    if (dropzone.children.length === 0) {
+      return dropzone;
     }
-  };
-}
-
-
-// Enviar datos a la API de Notion
-async function sendToNotionAPI(data) {
-  return fetch('https://pagweb-whih.onrender.com/api/save-attendance', {  
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
-}
-
+  }
+  return null;
+  
 // Actualizar contador
 function updateCounter() {
   document.getElementById('totalCounter').textContent = placedStudents;
