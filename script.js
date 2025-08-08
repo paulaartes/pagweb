@@ -202,7 +202,6 @@ function updateCounter() {
   document.getElementById('totalCounter').textContent = placedStudents;
 }
 
------
 
 // ===== Funciones para Firebase ===== //
 
