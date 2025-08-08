@@ -250,11 +250,11 @@ function collectAttendanceData() {
   });
   
   return {
-    date: currentDate,
-    present: presentStudents,
-    absent: absentStudents,
-    totalPresent: presentStudents.length,
-    totalAbsent: absentStudents.length,
+    Fecha: currentDate,
+    Presentes: presentStudents,
+    Ausentes: absentStudents,
+    totalPresentes: presentStudents.length,
+    totalAusentes: absentStudents.length,
     timestamp: firebase.firestore.FieldValue.serverTimestamp() // ¡Cambiado a Firestore!
   };
 }
