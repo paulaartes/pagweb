@@ -29,7 +29,7 @@ const studentsData = [
   { id: 11, name: 'Paula', photo: 'Paula.png' },
   { id: 12, name: 'Imran', photo: 'Imran.png' },
   { id: 13, name: 'Soundous', photo: 'Soundous.png' },
-  { id: 14, name: 'Aya', photo: 'Aya.png' },
+  { id: 14, name: 'Afaf', photo: 'Afaf.png' },
   { id: 15, name: 'Nour', photo: 'Nour.png' },
   { id: 16, name: 'Manuel', photo: 'Manuel.png' },
   { id: 17, name: 'Asenat', photo: 'Asenat.png' },
@@ -41,6 +41,8 @@ const studentsData = [
   { id: 23, name: 'Barkwende', photo: 'Barkwende.png' },
   { id: 24, name: 'Lola', photo: 'Lola.png' },
   { id: 25, name: 'Yassin', photo: 'Yassin.png' },
+  { id: 26, name: 'Reda', photo: 'Reda.png' },
+  { id: 27, name: 'María-del-Carmen', photo: 'María-del-Carmen.png' }
 ];
 
 // Variables globales
