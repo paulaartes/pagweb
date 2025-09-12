@@ -40,8 +40,9 @@ const studentsData = [
   { id: 22, name: 'Lola', photo: 'Lola.png' },
   { id: 23, name: 'Yassin', photo: 'Yassin.png' },
   { id: 24, name: 'Reda', photo: 'Reda.png' },
-  { id: 25, name: 'María-del-Carmen', photo: 'María-del-Carmen.png' },
-  { id: 26, name: 'Afaf', photo: 'Afaf.png' },
+  { id: 25, name: 'Afaf', photo: 'Afaf.png' },
+  { id: 26, name: 'Maria-del-Carmen', photo: 'María-del-Carmen.png' }
+
 ];
 
 // Variables globales
