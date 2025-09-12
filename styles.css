@@ -218,6 +218,16 @@ button:hover {
     margin-bottom: 0; /* Elimina margen inferior extra */
   }
 
+    /* Normalizar imágenes en el panel */
+  #studentsPanel .student-img-container {
+    width: 70px;   /* tamaño fijo */
+    height: 70px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
   /* Imágenes arrastrables en PANEL (no en dropzones) */
   #studentsPanel .draggable {
     width: 50px;
