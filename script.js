@@ -41,7 +41,7 @@ const studentsData = [
   { id: 23, name: 'Yassin', photo: 'Yassin.png' },
   { id: 24, name: 'Reda', photo: 'Reda.png' },
   { id: 25, name: 'Afaf', photo: 'Afaf.png' },
-  { id: 26, name: 'Maria-del-Carmen', photo: 'María-del-Carmen.png' }
+  { id: 26, name: 'Maria-del-Carmen', photo: 'Maria-del-Carmen.png' }
 
 ];
 
